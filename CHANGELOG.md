@@ -21,11 +21,28 @@ newest node-patches release.
 
 - Build and test target-native optional addons for Kerberos, client-side field
   encryption, keychains and machine identity on every additional Node port.
-- Add FreeBSD and Windows ARM64 after node-patches publishes matching runtimes.
+- Complete FreeBSD and Windows ARM64 packaging once node-patches publishes
+  their registered runtimes and checksums.
 
 </details>
 
 # Upcoming mongosh-patches release
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/71c3497b59a0475e677349cc7cba0ca74fee0649">Schedule packages only when their Node runtime and checksum exist</a>. Thanks to xet7.</summary>
+
+The September 7 build completed its mongosh bundle and fourteen packages, but
+Windows ARM64 and FreeBSD x64 failed with HTTP 404 because node-patches v24.20.0
+had not published either runtime. Both workflows now plan their matrices from
+one release asset manifest. Missing prerequisites are named in the job summary;
+they remain registered and are reconsidered by Release All Missing after the
+runtime assets arrive. Local `build.sh all` uses the same availability planner.
+A runtime without its checksum never qualifies, and missing-only still repairs
+half-uploaded mongosh archives. No substitute architecture or older Node release
+is selected. Offline matrix tests and an actual ARM64 repack/launch verify the
+available-target path; Windows ARM64 and FreeBSD still need their Node builds.
+
+</details>
 
 **In short:** Build upstream mongosh once and package it for every ready-made
 `wekan/node-patches` Node.js target without rebuilding Node or V8.
