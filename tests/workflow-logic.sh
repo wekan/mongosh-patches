@@ -17,6 +17,9 @@ for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 w
 done
 grep -q 'wekan/node-patches' "$root/releases/package-target.sh" && ok 'packages use node-patches releases' || bad 'node-patches source absent'
 grep -q 'sha256sum -c' "$root/releases/package-target.sh" && ok 'Node checksum is enforced' || bad 'Node checksum is not enforced'
+grep -q 'checksum_asset="node-\$target.sha256sum"' "$root/releases/package-target.sh" && ok 'Windows uses published checksum names' || bad 'Windows checksum name includes the executable suffix'
+grep -q 'node-version:.*steps.meta.outputs.node-version' "$all" && ok 'Node release is resolved once' || bad 'Node release is not exposed by bundle job'
+grep -q 'NODE_PATCHES_VERSION:.*needs.bundle.outputs.node-version' "$all" && ok 'all packages share one Node release' || bad 'package jobs query Node releases independently'
 compile_line=$(grep -n '^npm run compile-cli$' "$root/releases/build-bundle.sh" | cut -d: -f1)
 bundle_line=$(grep -n '^npm run webpack-build --workspace @mongosh/cli-repl$' "$root/releases/build-bundle.sh" | cut -d: -f1)
 if [ -n "$compile_line" ] && [ -n "$bundle_line" ] && [ "$compile_line" -lt "$bundle_line" ]; then

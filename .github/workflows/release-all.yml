@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      node-version: ${{ steps.meta.outputs.node-version }}
     steps:
       - uses: actions/checkout@v7
         with: { path: _patches }
@@ -36,7 +37,17 @@ jobs:
       - name: Build the architecture-independent mongosh bundle
         run: bash _patches/releases/build-bundle.sh
       - id: meta
-        run: echo "version=$MONGOSH_REF" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          node_version="$(curl --fail --silent --show-error --location --retry 5 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            https://api.github.com/repos/wekan/node-patches/releases/latest |
+            node -e "let s='';process.stdin.on('data',c=>s+=c);process.stdin.on('end',()=>{const r=JSON.parse(s);if(typeof r.tag_name!=='string')process.exit(2);process.stdout.write(r.tag_name)})")"
+          echo "version=$MONGOSH_REF" >> "$GITHUB_OUTPUT"
+          echo "node-version=$node_version" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v7
         with:
           name: mongosh-bundle
@@ -60,6 +71,7 @@ jobs:
       - name: Package mongosh with the matching node-patches release binary
         env:
           PATCHES_ROOT: _patches
+          NODE_PATCHES_VERSION: ${{ needs.bundle.outputs.node-version }}
         run: bash _patches/releases/package-target.sh "${{ matrix.target }}" bundle/mongosh.js
       - uses: actions/upload-artifact@v7
         with:

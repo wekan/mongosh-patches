@@ -31,6 +31,17 @@ newest node-patches release.
 `wekan/node-patches` Node.js target without rebuilding Node or V8.
 
 <details>
+<summary>Use the published Windows checksums and one shared Node release</summary>
+
+Windows packages now verify `node-win32.exe` and `node-win64.exe` with the
+checksum filenames that node-patches actually publishes. Release All resolves
+the Node release once with its authenticated workflow token and passes the same
+tag to all fourteen package jobs, avoiding unauthenticated GitHub API rate
+limits during the parallel matrix.
+
+</details>
+
+<details>
 <summary>Compile internal mongosh workspaces before bundling</summary>
 
 The bundle job now runs upstream's dependency-aware `compile-cli` target before

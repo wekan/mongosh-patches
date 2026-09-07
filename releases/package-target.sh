@@ -9,20 +9,20 @@ mkdir -p "$out"
 out="$(cd "$out" && pwd)"
 repo="${NODE_PATCHES_REPO:-wekan/node-patches}"
 node_tag="${NODE_PATCHES_VERSION:-}"
-[ -n "$node_tag" ] || node_tag="$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest" | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p' | head -1)"
+[ -n "$node_tag" ] || node_tag="$(curl -fsSL --retry 5 --retry-all-errors "https://api.github.com/repos/$repo/releases/latest" | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p' | head -1)"
 case "$target" in
-  amd64) node_asset=node-x64 ;;
-  arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64) node_asset="node-$target" ;;
-  mac-amd64) node_asset=node-mac-x64 ;;
-  mac-arm64) node_asset=node-mac-arm64 ;;
-  win64|win32) node_asset="node-$target.exe" ;;
+  amd64) node_asset=node-x64; checksum_asset="$node_asset.sha256sum" ;;
+  arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64) node_asset="node-$target"; checksum_asset="$node_asset.sha256sum" ;;
+  mac-amd64) node_asset=node-mac-x64; checksum_asset="$node_asset.sha256sum" ;;
+  mac-arm64) node_asset=node-mac-arm64; checksum_asset="$node_asset.sha256sum" ;;
+  win64|win32) node_asset="node-$target.exe"; checksum_asset="node-$target.sha256sum" ;;
   *) echo "unsupported node-patches target: $target" >&2; exit 2 ;;
 esac
 base="https://github.com/$repo/releases/download/$node_tag"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-curl -fL --retry 5 -o "$tmp/$node_asset" "$base/$node_asset"
-curl -fL --retry 5 -o "$tmp/$node_asset.sha256sum" "$base/$node_asset.sha256sum"
-(cd "$tmp" && sha256sum -c "$node_asset.sha256sum")
+curl -fL --retry 5 --retry-all-errors -o "$tmp/$node_asset" "$base/$node_asset"
+curl -fL --retry 5 --retry-all-errors -o "$tmp/$checksum_asset" "$base/$checksum_asset"
+(cd "$tmp" && sha256sum -c "$checksum_asset")
 pkg="$tmp/mongosh-$target"; mkdir -p "$pkg/bin" "$pkg/lib/mongosh"
 node_name=node; [[ "$target" == win* ]] && node_name=node.exe
 cp "$tmp/$node_asset" "$pkg/bin/$node_name"
