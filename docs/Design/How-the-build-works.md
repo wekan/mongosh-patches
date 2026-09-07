@@ -36,7 +36,7 @@ target-specific builds before those features can be claimed for a new port.
 
 ## Releases
 
-Release All builds one source bundle, fans out fourteen packages, checksums each
+Release All builds one source bundle, fans out sixteen packages, checksums each
 archive and accumulates them on the upstream-version tag. Release All Missing
 audits both the archive and checksum so a half-uploaded target is never called
 complete. GitHub logs name every missing target explicitly.

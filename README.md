@@ -11,7 +11,8 @@ Node.js and V8 are never rebuilt here.
 Release assets are `mongosh-<target>.tgz` or `.zip`, each with a
 `.sha256sum`. Supported target tokens are the intersection currently published
 by node-patches: `amd64`, `arm64`, `armhf`, `armv6`, `armv7`, `i386`, `ppc64le`,
-`s390x`, `riscv64`, `loong64`, `win64`, `win32`, `mac-amd64` and `mac-arm64`.
+`s390x`, `riscv64`, `loong64`, `win64`, `win-arm64`, `win32`, `mac-amd64`,
+`mac-arm64` and `freebsd-x64`.
 
 ```sh
 ./build.sh bundle

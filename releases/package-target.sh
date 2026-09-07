@@ -15,7 +15,8 @@ case "$target" in
   arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64) node_asset="node-$target"; checksum_asset="$node_asset.sha256sum" ;;
   mac-amd64) node_asset=node-mac-x64; checksum_asset="$node_asset.sha256sum" ;;
   mac-arm64) node_asset=node-mac-arm64; checksum_asset="$node_asset.sha256sum" ;;
-  win64|win32) node_asset="node-$target.exe"; checksum_asset="node-$target.sha256sum" ;;
+  freebsd-x64) node_asset=node-freebsd-x64; checksum_asset="$node_asset.sha256sum" ;;
+  win64|win-arm64|win32) node_asset="node-$target.exe"; checksum_asset="node-$target.sha256sum" ;;
   *) echo "unsupported node-patches target: $target" >&2; exit 2 ;;
 esac
 base="https://github.com/$repo/releases/download/$node_tag"

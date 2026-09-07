@@ -11,15 +11,18 @@ done
 
 all="$root/.github/workflows/release-all.yml"
 missing="$root/.github/workflows/release-all-missing.yml"
-for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win32 mac-amd64 mac-arm64; do
+for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win-arm64 win32 mac-amd64 mac-arm64 freebsd-x64; do
   grep -q "$target" "$all" && ok "Release All names $target" || bad "Release All misses $target"
   grep -q "$target" "$missing" && ok "Missing audit names $target" || bad "Missing audit misses $target"
 done
 grep -q 'wekan/node-patches' "$root/releases/package-target.sh" && ok 'packages use node-patches releases' || bad 'node-patches source absent'
 grep -q 'sha256sum -c' "$root/releases/package-target.sh" && ok 'Node checksum is enforced' || bad 'Node checksum is not enforced'
 grep -q 'checksum_asset="node-\$target.sha256sum"' "$root/releases/package-target.sh" && ok 'Windows uses published checksum names' || bad 'Windows checksum name includes the executable suffix'
+grep -q 'win64|win-arm64|win32' "$root/releases/package-target.sh" && ok 'Windows ARM64 package uses its Node release asset' || bad 'Windows ARM64 package target absent'
+grep -q 'freebsd-x64.*node-freebsd-x64' "$root/releases/package-target.sh" && ok 'FreeBSD package uses its Node release asset' || bad 'FreeBSD package target absent'
 grep -q 'node-version:.*steps.meta.outputs.node-version' "$all" && ok 'Node release is resolved once' || bad 'Node release is not exposed by bundle job'
 grep -q 'NODE_PATCHES_VERSION:.*needs.bundle.outputs.node-version' "$all" && ok 'all packages share one Node release' || bad 'package jobs query Node releases independently'
+grep -q 'NODE_PATCHES_VERSION:.*needs.audit.outputs.node-version' "$missing" && ok 'missing packages share one Node release' || bad 'missing package jobs query Node releases independently'
 compile_line=$(grep -n '^npm run compile-cli$' "$root/releases/build-bundle.sh" | cut -d: -f1)
 bundle_line=$(grep -n '^npm run webpack-build --workspace @mongosh/cli-repl$' "$root/releases/build-bundle.sh" | cut -d: -f1)
 if [ -n "$compile_line" ] && [ -n "$bundle_line" ] && [ "$compile_line" -lt "$bundle_line" ]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 root="$(cd "$(dirname "$0")" && pwd)"
-targets='amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win32 mac-amd64 mac-arm64'
+targets='amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win-arm64 win32 mac-amd64 mac-arm64 freebsd-x64'
 
 build_bundle() {
   work="$(mktemp -d)"; trap 'rm -rf "$work"' RETURN
@@ -20,7 +20,7 @@ build_target() {
 case "${1:-menu}" in
   all) for target in $targets; do build_target "$target"; done ;;
   bundle) build_bundle ;;
-  amd64|arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64|win64|win32|mac-amd64|mac-arm64) build_target "$1" ;;
+  amd64|arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64|win64|win-arm64|win32|mac-amd64|mac-arm64|freebsd-x64) build_target "$1" ;;
   menu)
     printf '1) Build bundle\n2) Package current platform\n3) Package all targets\nSelection: '
     read -r choice

@@ -17,6 +17,7 @@ jobs:
     outputs:
       targets: ${{ steps.gaps.outputs.targets }}
       count: ${{ steps.gaps.outputs.count }}
+      node-version: ${{ steps.gaps.outputs.node-version }}
     steps:
       - id: gaps
         env:
@@ -27,7 +28,7 @@ jobs:
           set -euo pipefail
           gh release view "$VERSION" --json assets --jq '.assets[].name' > existing
           targets=()
-          for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win32 mac-amd64 mac-arm64; do
+          for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win-arm64 win32 mac-amd64 mac-arm64 freebsd-x64; do
             ext=tgz; case "$target" in win*) ext=zip ;; esac
             asset="mongosh-$target.$ext"
             if ! grep -qxF "$asset" existing || ! grep -qxF "$asset.sha256sum" existing; then
@@ -38,6 +39,11 @@ jobs:
           json="$(printf '%s\n' "${targets[@]}" | jq -Rsc 'split("\n") | map(select(length > 0))')"
           echo "targets=$json" >> "$GITHUB_OUTPUT"
           echo "count=${#targets[@]}" >> "$GITHUB_OUTPUT"
+          node_version="$(gh api repos/wekan/node-patches/releases/latest --jq .tag_name)"
+          [ -n "$node_version" ] && [ "$node_version" != null ] || {
+            echo '::error::no node-patches release found'; exit 1;
+          }
+          echo "node-version=$node_version" >> "$GITHUB_OUTPUT"
   bundle:
     needs: audit
     if: ${{ needs.audit.outputs.count != '0' }}
@@ -70,7 +76,9 @@ jobs:
         with:
           name: mongosh-missing-bundle
           path: bundle
-      - env: { PATCHES_ROOT: _patches }
+      - env:
+          PATCHES_ROOT: _patches
+          NODE_PATCHES_VERSION: ${{ needs.audit.outputs.node-version }}
         run: bash _patches/releases/package-target.sh "${{ matrix.target }}" bundle/mongosh.js
       - uses: actions/upload-artifact@v7
         with:
