@@ -2,17 +2,19 @@
 
 ## Source and patches
 
-`prepare-source.sh` resolves GitHub's newest **published stable release**, performs
-a shallow clone and applies `dist/all` followed by the target patch section.
-Raw repository tags are deliberately not used for the default: upstream can tag
-draft releases whose source still reports the preceding version. Every patch
-must have a matching checksum and explanation.
+`resolve-source.mjs` reads the newest upstream `main` commit from GitHub once.
+`prepare-source.sh` fetches its full immutable SHA, checks that the resulting
+checkout matches, and applies checksum-verified patches in `dist/all` followed
+by the target patch section. The release identifier is `main-` plus the first
+12 hexadecimal characters of that commit. Arbitrary refs and malformed source
+identifiers are rejected before invoking Git.
 
-Published upstream tags also identify the source commit *before* mongosh's
-release `PackageBumper` writes the release version. After `npm ci` has validated
-the pristine lockfile, `set-source-version.mjs` performs the same relevant edits:
-the CLI package version and shell API version constant. The resulting bundle
-must report the requested version or the job stops before uploading anything.
+After `npm ci` validates the original lockfile, `set-source-version.mjs` stamps
+the CLI package and shell API constant with a valid semantic prerelease version:
+`<upstream-version>-main.<short-hash>`. The release itself is named `main-HASH`.
+`mongosh-source.json` records the full commit SHA in the shared build artifact,
+the GitHub release, and every target archive. The bundle must report its stamped
+version or the build stops before uploading artifacts.
 
 ## One bundle, existing Node ports
 
@@ -36,7 +38,14 @@ target-specific builds before those features can be claimed for a new port.
 
 ## Releases
 
-Release All builds one source bundle, fans out sixteen packages, checksums each
-archive and accumulates them on the upstream-version tag. Release All Missing
-audits both the archive and checksum so a half-uploaded target is never called
-complete. GitHub logs name every missing target explicitly.
+Release All builds one immutable main source bundle, filters the sixteen-target
+registry using one Node release's complete runtime/checksum pairs, and packages
+the available targets under `main-HASH`. Unavailable prerequisites appear in the
+job summary and remain registered for later retries.
+
+Release All Missing accepts an existing `main-HASH`, resolves the matching
+immutable commit, and verifies the prefix. It audits both archive and checksum,
+so a half-uploaded target is never called complete. Source resolution never uses
+the current main head for a repair. It also waits for a complete Node runtime
+pair before scheduling that target. Neither workflow substitutes another
+architecture or falls back to an older Node runtime.

@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'mongosh tag (empty = newest stable)'
+        description: 'Source (empty = newest main; or main- plus 12-character commit hash)'
         required: false
         type: string
       publish:
@@ -31,8 +31,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: { path: _patches }
-      - name: Fetch upstream and apply verified patches
-        run: bash _patches/releases/prepare-source.sh _patches "${{ inputs.version }}"
+      - name: Fetch exact upstream main commit and apply verified patches
+        env:
+          REQUESTED_SOURCE: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash _patches/releases/prepare-source.sh _patches "$REQUESTED_SOURCE"
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -99,7 +102,8 @@ jobs:
           VERSION: ${{ needs.bundle.outputs.version }}
         run: |
           set -euo pipefail
-          assets=(out/mongosh-*.tgz out/mongosh-*.zip out/*.sha256sum)
+          shopt -s nullglob
+          assets=(out/mongosh-*.tgz out/mongosh-*.zip out/*.sha256sum out/mongosh-source.json)
           [ -e "${assets[0]}" ] || { echo '::error::no packages'; exit 1; }
           printf 'mongosh %s packages using prebuilt wekan/node-patches Node.js runtimes.\n' "$VERSION" > notes.md
           if gh release view "$VERSION" >/dev/null 2>&1; then

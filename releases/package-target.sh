@@ -28,6 +28,7 @@ pkg="$tmp/mongosh-$target"; mkdir -p "$pkg/bin" "$pkg/lib/mongosh"
 node_name=node; [[ "$target" == win* ]] && node_name=node.exe
 cp "$tmp/$node_asset" "$pkg/bin/$node_name"
 cp "$bundle" "$pkg/lib/mongosh/mongosh.js"
+cp "$(dirname "$bundle")/mongosh-source.json" "$pkg/mongosh-source.json"
 cp "${PATCHES_ROOT:-.}/LICENSE" "$pkg/LICENSE-wekan-build"
 if [[ "$target" == win* ]]; then
   cat > "$pkg/mongosh.bat" <<EOF

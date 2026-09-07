@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 
 const version = process.argv[2] || '';
-if (!/^\d+\.\d+\.\d+$/.test(version)) {
+if (!/^\d+\.\d+\.\d+(?:-main\.[0-9a-f]{12})?$/.test(version)) {
   throw new Error(`Invalid mongosh release version: ${version || '(empty)'}`);
 }
 

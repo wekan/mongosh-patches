@@ -2,3 +2,5 @@ mongosh.js
 out/
 node_modules/
 *.new
+
+mongosh-source.json

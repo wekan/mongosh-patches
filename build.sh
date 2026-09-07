@@ -5,15 +5,19 @@ targets='amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 
 
 build_bundle() {
   work="$(mktemp -d)"; trap 'rm -rf "$work"' RETURN
-  ref="$(bash "$root/releases/newest-release.sh" "$root")"
-  git clone --depth 1 --branch "$ref" https://github.com/mongodb-js/mongosh.git "$work/src"
-  (cd "$work/src" && MONGOSH_REF="$ref" MONGOSH_VERSION="${ref#v}" \
+  mkdir "$work/src"
+  (cd "$work/src"
+    GITHUB_ENV="$work/source.env" bash "$root/releases/prepare-source.sh" "$root"
+    set -a; source "$work/source.env"; set +a
     bash "$root/releases/build-bundle.sh")
   cp "$work/src/out/mongosh.js" "$root/mongosh.js"
+  cp "$work/src/out/mongosh-source.json" "$root/mongosh-source.json"
 }
 
 build_target() {
-  [ -s "$root/mongosh.js" ] || build_bundle
+  if [ ! -s "$root/mongosh.js" ] || [ ! -s "$root/mongosh-source.json" ]; then
+    build_bundle
+  fi
   (cd "$root" && PATCHES_ROOT="$root" bash releases/package-target.sh "$1" mongosh.js)
 }
 

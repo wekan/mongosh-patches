@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Existing mongosh release tag, e.g. v2.10.0'
+        description: 'Existing main-HASH release, e.g. main-79267331504d'
         required: true
         type: string
 permissions:
@@ -29,6 +29,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
+          [[ "$VERSION" =~ ^main-[0-9a-f]{12}$ ]] || { echo 'Expected main- plus 12 hex characters' >&2; exit 2; }
           gh release view "$VERSION" --json assets --jq '.assets[].name' > existing
           gh api repos/wekan/node-patches/releases/latest > node-release.json
           node _patches/releases/plan-targets.mjs node-release.json existing
@@ -39,7 +40,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: { path: _patches }
-      - run: bash _patches/releases/prepare-source.sh _patches "${{ inputs.version }}"
+      - env:
+          REQUESTED_SOURCE: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash _patches/releases/prepare-source.sh _patches "$REQUESTED_SOURCE"
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -90,6 +94,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
+          shopt -s nullglob
           assets=(out/*)
           [ -e "${assets[0]}" ] || { echo '::error::missing build emitted no assets'; exit 1; }
           gh release upload "$VERSION" "${assets[@]}" --clobber

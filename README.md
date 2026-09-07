@@ -2,11 +2,19 @@
 
 Patch-only build and multi-platform packaging for
 [MongoDB Shell](https://github.com/mongodb-js/mongosh). It follows the newest
-stable upstream `2.x` tag, applies checksum-verified patches from `dist/`, builds
+commit of upstream `main`, applies checksum-verified patches from `dist/`, builds
 one architecture-independent production bundle, and combines it with the
 matching ready-made Node.js runtime from
 [wekan/node-patches releases](https://github.com/wekan/node-patches/releases).
 Node.js and V8 are never rebuilt here.
+
+Each build resolves upstream `main` once, fetches that exact full commit, and
+names the release/tag `main-<12-character-hash>` (for example,
+`main-79267331504d`). A `mongosh-source.json` records the full SHA in the release
+and inside every package. The executable reports the upstream semantic version
+with `-main.<hash>` appended, such as `2.10.0-main.79267331504d`.
+Release All Missing accepts the existing `main-HASH` name and rebuilds that exact
+source even after upstream main advances; it never silently switches commits.
 
 Release assets are `mongosh-<target>.tgz` or `.zip`, each with a
 `.sha256sum`. The target registry includes: `amd64`, `arm64`, `armhf`, `armv6`, `armv7`, `i386`, `ppc64le`,
