@@ -1,0 +1,95 @@
+name: Release All
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'mongosh tag (empty = newest stable)'
+        required: false
+        type: string
+      publish:
+        description: 'Attach packages to the GitHub Release'
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mongosh-${{ inputs.version || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { path: _patches }
+      - name: Fetch upstream and apply verified patches
+        run: bash _patches/releases/prepare-source.sh _patches "${{ inputs.version }}"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Build the architecture-independent mongosh bundle
+        run: bash _patches/releases/build-bundle.sh
+      - id: meta
+        run: echo "version=$MONGOSH_REF" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mongosh-bundle
+          path: out/
+          if-no-files-found: error
+
+  packages:
+    needs: bundle
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [amd64, arm64, armhf, armv6, armv7, i386, ppc64le, s390x, riscv64, loong64, win64, win32, mac-amd64, mac-arm64]
+    steps:
+      - uses: actions/checkout@v7
+        with: { path: _patches }
+      - uses: actions/download-artifact@v8
+        with:
+          name: mongosh-bundle
+          path: bundle
+      - name: Package mongosh with the matching node-patches release binary
+        env:
+          PATCHES_ROOT: _patches
+        run: bash _patches/releases/package-target.sh "${{ matrix.target }}" bundle/mongosh.js
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mongosh-${{ matrix.target }}
+          path: out/*
+          if-no-files-found: error
+
+  publish:
+    if: ${{ inputs.publish }}
+    needs: [bundle, packages]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: mongosh-*
+          path: out
+          merge-multiple: true
+      - name: Create or update the accumulating release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.bundle.outputs.version }}
+        run: |
+          set -euo pipefail
+          assets=(out/mongosh-*.tgz out/mongosh-*.zip out/*.sha256sum)
+          [ -e "${assets[0]}" ] || { echo '::error::no packages'; exit 1; }
+          printf 'mongosh %s packages using prebuilt wekan/node-patches Node.js runtimes.\n' "$VERSION" > notes.md
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release upload "$VERSION" "${assets[@]}" --clobber
+            gh release edit "$VERSION" --notes-file notes.md
+          else
+            gh release create "$VERSION" "${assets[@]}" --title "$VERSION" --notes-file notes.md
+          fi

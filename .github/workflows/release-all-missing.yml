@@ -1,0 +1,98 @@
+name: Release All Missing
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Existing mongosh release tag, e.g. v2.10.0'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: mongosh-${{ inputs.version }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.gaps.outputs.targets }}
+      count: ${{ steps.gaps.outputs.count }}
+    steps:
+      - id: gaps
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          gh release view "$VERSION" --json assets --jq '.assets[].name' > existing
+          targets=()
+          for target in amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win32 mac-amd64 mac-arm64; do
+            ext=tgz; case "$target" in win*) ext=zip ;; esac
+            asset="mongosh-$target.$ext"
+            if ! grep -qxF "$asset" existing || ! grep -qxF "$asset.sha256sum" existing; then
+              echo "missing $asset or its checksum"
+              targets+=("$target")
+            fi
+          done
+          json="$(printf '%s\n' "${targets[@]}" | jq -Rsc 'split("\n") | map(select(length > 0))')"
+          echo "targets=$json" >> "$GITHUB_OUTPUT"
+          echo "count=${#targets[@]}" >> "$GITHUB_OUTPUT"
+  bundle:
+    needs: audit
+    if: ${{ needs.audit.outputs.count != '0' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { path: _patches }
+      - run: bash _patches/releases/prepare-source.sh _patches "${{ inputs.version }}"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: bash _patches/releases/build-bundle.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mongosh-missing-bundle
+          path: out/
+          if-no-files-found: error
+  packages:
+    needs: [audit, bundle]
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.audit.outputs.targets) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with: { path: _patches }
+      - uses: actions/download-artifact@v8
+        with:
+          name: mongosh-missing-bundle
+          path: bundle
+      - env: { PATCHES_ROOT: _patches }
+        run: bash _patches/releases/package-target.sh "${{ matrix.target }}" bundle/mongosh.js
+      - uses: actions/upload-artifact@v7
+        with:
+          name: missing-${{ matrix.target }}
+          path: out/*
+          if-no-files-found: error
+  publish:
+    needs: [audit, packages]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: missing-*
+          path: out
+          merge-multiple: true
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          assets=(out/*)
+          [ -e "${assets[0]}" ] || { echo '::error::missing build emitted no assets'; exit 1; }
+          gh release upload "$VERSION" "${assets[@]}" --clobber
+          echo "Repaired ${{ needs.audit.outputs.count }} target package(s)."

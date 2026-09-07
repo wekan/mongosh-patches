@@ -1,0 +1,4 @@
+mongosh.js
+out/
+node_modules/
+*.new
