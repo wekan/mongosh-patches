@@ -44,6 +44,9 @@ grep -q 'MONGOSH_VERSION="${ref#v}"' "$root/build.sh" && ok 'local bundle export
 node --check "$root/releases/set-source-version.mjs" && ok 'source version helper parses' || bad 'source version helper does not parse'
 grep -q 'if-no-files-found: error' "$all" && ok 'empty artifacts fail loudly' || bad 'empty artifacts may pass'
 grep -q 'gh release upload.*--clobber' "$all" && ok 'Release All accumulates safely' || bad 'release accumulation absent'
-grep -q 'grep -qxF.*sha256sum' "$missing" && ok 'missing audit requires checksum pair' || bad 'half-upload check absent'
+grep -q 'plan-targets.mjs node-release.json existing' "$missing" && ok 'missing audit uses runtime and archive pair planner' || bad 'missing planner absent'
+node --test "$root/tests/plan-targets.test.mjs" && ok 'runtime availability plans pass' || bad 'runtime availability plans failed'
+grep -q 'fromJSON(needs.bundle.outputs.targets)' "$all" && ok 'full matrix uses available runtimes' || bad 'full matrix is unconditional'
 
+grep -q 'plan-targets.mjs' "$root/build.sh" && ok 'local all build checks published runtime pairs' || bad 'local all build unconditionally schedules missing runtimes'
 [ "$fails" -eq 0 ] || exit 1

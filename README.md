@@ -9,10 +9,18 @@ matching ready-made Node.js runtime from
 Node.js and V8 are never rebuilt here.
 
 Release assets are `mongosh-<target>.tgz` or `.zip`, each with a
-`.sha256sum`. Supported target tokens are the intersection currently published
-by node-patches: `amd64`, `arm64`, `armhf`, `armv6`, `armv7`, `i386`, `ppc64le`,
+`.sha256sum`. The target registry includes: `amd64`, `arm64`, `armhf`, `armv6`, `armv7`, `i386`, `ppc64le`,
 `s390x`, `riscv64`, `loong64`, `win64`, `win-arm64`, `win32`, `mac-amd64`,
 `mac-arm64` and `freebsd-x64`.
+
+Both workflows and `build.sh all` intersect this registry with the runtime AND
+checksum assets in one selected node-patches release before scheduling packages.
+Unavailable targets are reported in the job log and workflow summary; they are
+not built or published. Release All Missing checks them again on its next run.
+At node-patches v24.20.0, Windows ARM64 and FreeBSD x64 have build definitions but
+no published runtimes, so the other fourteen targets can complete independently.
+No older runtime, differently named architecture, or unverified binary is used as
+a fallback. These two packages remain blocked until node-patches publishes them.
 
 ```sh
 ./build.sh bundle
