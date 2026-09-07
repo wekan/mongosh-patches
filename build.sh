@@ -5,8 +5,10 @@ targets='amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 
 
 build_bundle() {
   work="$(mktemp -d)"; trap 'rm -rf "$work"' RETURN
-  git clone --depth 1 --branch "$(bash "$root/releases/newest-release.sh" "$root")" https://github.com/mongodb-js/mongosh.git "$work/src"
-  (cd "$work/src" && bash "$root/releases/build-bundle.sh")
+  ref="$(bash "$root/releases/newest-release.sh" "$root")"
+  git clone --depth 1 --branch "$ref" https://github.com/mongodb-js/mongosh.git "$work/src"
+  (cd "$work/src" && MONGOSH_REF="$ref" MONGOSH_VERSION="${ref#v}" \
+    bash "$root/releases/build-bundle.sh")
   cp "$work/src/out/mongosh.js" "$root/mongosh.js"
 }
 

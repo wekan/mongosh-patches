@@ -31,6 +31,19 @@ newest node-patches release.
 `wekan/node-patches` Node.js target without rebuilding Node or V8.
 
 <details>
+<summary>Compile internal mongosh workspaces before bundling</summary>
+
+The bundle job now runs upstream's dependency-aware `compile-cli` target before
+the `cli-repl` webpack task. This creates the JavaScript and TypeScript
+declarations for every imported `@mongosh/*` workspace instead of failing with
+`TS2307: Cannot find module` immediately after `npm ci`. Automatic releases now
+use GitHub's newest published stable release rather than the greatest raw Git
+tag, and execute the bundle with `--version` so draft or mismatched source cannot
+be published under an incorrect version.
+
+</details>
+
+<details>
 <summary>Initial patch-only multi-platform release build</summary>
 
 The source resolver follows stable upstream tags. Patch checksums are verified
