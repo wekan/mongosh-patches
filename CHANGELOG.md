@@ -31,6 +31,18 @@ newest node-patches release.
 `wekan/node-patches` Node.js target without rebuilding Node or V8.
 
 <details>
+<summary>Package mongosh for Windows ARM64 and FreeBSD x64</summary>
+
+The sixteen-target registries now include `win-arm64` and `freebsd-x64`, using
+the matching checksum-verified node-patches runtime and the existing portable
+mongosh bundle. Both full and missing-only workflows resolve one authenticated
+Node release for their complete matrix, avoiding concurrent unauthenticated API
+queries. Offline coverage keeps the workflow, scripts, menus and asset mapping
+in agreement.
+
+</details>
+
+<details>
 <summary>Use the published Windows checksums and one shared Node release</summary>
 
 Windows packages now verify `node-win32.exe` and `node-win64.exe` with the
