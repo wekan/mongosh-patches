@@ -8,7 +8,8 @@
 <details>
 <summary>Version</summary>
 
-The release tag is the upstream mongosh tag. Each archive records that one
+The release tag is `main-` plus the first 12 characters of the resolved upstream
+main commit SHA. Each archive records that one
 JavaScript bundle and an independently checksum-verified Node runtime from the
 newest node-patches release.
 
@@ -27,6 +28,27 @@ newest node-patches release.
 </details>
 
 # Upcoming mongosh-patches release
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/c4406fd49ac71f0a21afa36b5b4fbba66d4aabf8">Build the newest upstream main commit as main-HASH</a>. Thanks to xet7.</summary>
+
+Source resolution now reads upstream main once, fetches that exact full commit,
+and verifies the checkout. Releases use `main-` plus the first twelve commit
+characters. The CLI keeps a valid semantic version with a `-main.HASH` suffix;
+the shared artifact and every archive include the full commit in
+`mongosh-source.json`. Missing-only reruns resolve their requested main-HASH
+commit, never the later main head. Invalid refs and mismatching API results fail
+closed, and workflow inputs are passed as environment values rather than
+interpolated shell code. Runtime availability planning remains in place.
+
+Verified by resolving and building commit 79267331504d0e064d30ea29046b4204de720dae
+from upstream main, then packaging it with the checksum-verified ARM64 Node
+runtime. The archive checksum passes, its CLI reports
+`2.10.0-main.79267331504d`, and its no-database JavaScript evaluation returns 42.
+The source identity and runtime matrix suites pass; Windows ARM64 and FreeBSD
+remain blocked by their missing Node runtime assets.
+
+</details>
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/71c3497b59a0475e677349cc7cba0ca74fee0649">Schedule packages only when their Node runtime and checksum exist</a>. Thanks to xet7.</summary>
