@@ -1,0 +1,175 @@
+diff --git a/packages/cli-repl/src/config-directory.ts b/packages/cli-repl/src/config-directory.ts
+index b0a87bb..44a98a5 100644
+--- a/packages/cli-repl/src/config-directory.ts
++++ b/packages/cli-repl/src/config-directory.ts
+@@ -1,9 +1,28 @@
+-import { promises as fs } from 'fs';
++import { promises as fs, accessSync, constants as fsConstants } from 'fs';
+ import path from 'path';
+ import os from 'os';
+ import { EventEmitter } from 'events';
+ import { EJSON } from 'bson';
+ 
++/**
++ * Fork change: os.homedir() is not always writable — a container that runs as
++ * a user with no /etc/passwd entry (e.g. FerretDB's default image) reports it
++ * as '/nonexistent', which is not creatable. Writing config/log/history data
++ * there fails with EACCES/ENOENT instead of falling back anywhere, and mongosh
++ * reported that as a startup warning plus "Could not open history file" on
++ * every session. Fall back to a writable, session-scoped directory under the
++ * OS temp dir instead of the unwritable home directory.
++ */
++function resolveWritableHomeBase(): string {
++  const home = os.homedir();
++  try {
++    accessSync(home, fsConstants.W_OK);
++    return home;
++  } catch {
++    return path.join(os.tmpdir(), `mongosh-${process.getuid ? process.getuid() : 'nouid'}`);
++  }
++}
++
+ /**
+  * A set of paths that are used by the shell, typically located
+  * within the user's home directory.
+@@ -160,7 +179,7 @@ export function getStoragePaths(): ShellHomePaths {
+       shellRoamingDataPath = path.join(appData, 'mongodb', 'mongosh');
+     }
+   }
+-  const homedir = path.join(os.homedir(), '.mongodb', 'mongosh');
++  const homedir = path.join(resolveWritableHomeBase(), '.mongodb', 'mongosh');
+   shellLocalDataPath ??= homedir;
+   shellRoamingDataPath ??= homedir;
+   return {
+diff --git a/packages/cli-repl/src/constants.ts b/packages/cli-repl/src/constants.ts
+index 523882c..c2eb1b9 100644
+--- a/packages/cli-repl/src/constants.ts
++++ b/packages/cli-repl/src/constants.ts
+@@ -1,12 +1,15 @@
+ import i18n from '@mongosh/i18n';
+ import { colorizeForStderr as clr } from './clr';
+ 
++// Fork change: this build never collects or sends telemetry (see
++// setup-analytics.ts), so the upstream opt-out banner — which tells the user
++// data IS being collected and how to turn it off — would be false here.
++// disableTelemetry() still exists as a no-op command for compatibility with
++// scripts that call it; there is nothing left for it to disable.
+ export const TELEMETRY_GREETING_MESSAGE = `
+-${i18n.__('cli-repl.cli-repl.telemetry')}
+-${i18n.__('cli-repl.cli-repl.disableTelemetry')}${clr(
+-  'disableTelemetry()',
+-  'bold'
+-)} ${i18n.__('cli-repl.cli-repl.command')}
++${clr('This is the wekan/mongosh-patches fork of mongosh.', 'bold')}
++No usage data is collected or sent by this build. Telemetry is removed, not
++just disabled.
+ `;
+ 
+ export const MONGOSH_WIKI = `
+diff --git a/packages/cli-repl/src/device-id.ts b/packages/cli-repl/src/device-id.ts
+index 8771da2..64261b8 100644
+--- a/packages/cli-repl/src/device-id.ts
++++ b/packages/cli-repl/src/device-id.ts
+@@ -1,29 +1,12 @@
+-import { getDeviceId } from '@mongodb-js/device-id';
+ import { type MongoshBus } from '@mongosh/types';
+ 
+-export async function getDeviceIdForMongosh({
+-  bus,
+-  signal,
+-}: {
++// Fork change: telemetry is removed (see setup-analytics.ts), and the device
++// ID this used to compute exists only to key telemetry throttle state. Do not
++// read the machine's native machine-id for a feature that no longer sends
++// anything anywhere.
++export async function getDeviceIdForMongosh(_params: {
+   bus: MongoshBus;
+   signal: AbortSignal;
+ }): Promise<string> {
+-  try {
+-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+-    const getMachineId = require('@mongodb-js/native-machine-id').getMachineId;
+-    return await getDeviceId({
+-      getMachineId: () => getMachineId({ raw: true }),
+-      onError: (reason, error) => {
+-        if (reason === 'abort') {
+-          return;
+-        }
+-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+-        bus.emit('mongosh:error', error, 'telemetry');
+-      },
+-      abortSignal: signal,
+-    });
+-  } catch (error) {
+-    bus.emit('mongosh:error', error as Error, 'telemetry');
+-    return 'unknown';
+-  }
++  return 'unknown';
+ }
+diff --git a/packages/cli-repl/src/setup-analytics.ts b/packages/cli-repl/src/setup-analytics.ts
+index 54bc844..3e0822a 100644
+--- a/packages/cli-repl/src/setup-analytics.ts
++++ b/packages/cli-repl/src/setup-analytics.ts
+@@ -1,15 +1,5 @@
+ import type { RequestInit, Response } from '@mongodb-js/devtools-proxy-support';
+-import {
+-  ThrottledAnalytics,
+-  ToggleableAnalytics,
+-  TelemetryClient,
+-} from '@mongosh/logging';
+-
+-/**
+- * ThrottledAnalytics caps events to protect against high-frequency
+- * scenarios such as reconnect loops.
+- */
+-const TELEMETRY_THROTTLE_RATE = 30;
++import { ToggleableAnalytics } from '@mongosh/logging';
+ 
+ export type SetupTelemetryAnalyticsParams = {
+   /**
+@@ -46,36 +36,13 @@ export type SetupTelemetryAnalyticsResult = {
+  * logged locally, just not sent. This is also why CI is safe without any
+  * special-casing: with no endpoint configured, no HTTP requests are made.
+  */
+-export async function resolveToggleableAnalytics({
+-  configuredTelemetryEndpoint,
+-  fetch,
+-  metadataPath,
+-  deviceId,
+-}: SetupTelemetryAnalyticsParams): Promise<SetupTelemetryAnalyticsResult> {
+-  // Resolve the telemetry endpoint: MONGOSH_TELEMETRY_ENDPOINT environment
+-  // variable > `telemetryEndpoint` user config (which carries the prod default).
+-  const telemetryEndpoint =
+-    process.env.MONGOSH_TELEMETRY_ENDPOINT ?? configuredTelemetryEndpoint;
+-  if (!telemetryEndpoint) {
+-    return { analytics: new ToggleableAnalytics(), telemetryEndpoint: '' };
+-  }
+-  const resolvedDeviceId = await Promise.resolve(deviceId);
+-  return {
+-    telemetryEndpoint,
+-    // ThrottledAnalytics wraps TelemetryClient target and gates every
+-    // track() call before it reaches it. The timeframe defaults to 60s.
+-    // Once the cap is hit, further events within the same window
+-    // are silently dropped and TelemetryClient.track()
+-    // (and its underlying fetch) is never called.
+-    analytics: new ToggleableAnalytics(
+-      new ThrottledAnalytics({
+-        currentSessionId: resolvedDeviceId,
+-        target: new TelemetryClient(telemetryEndpoint, fetch),
+-        throttle: {
+-          rate: TELEMETRY_THROTTLE_RATE,
+-          metadataPath,
+-        },
+-      })
+-    ),
+-  };
++export async function resolveToggleableAnalytics(
++  _params: SetupTelemetryAnalyticsParams
++): Promise<SetupTelemetryAnalyticsResult> {
++  // Fork change: this build never sends telemetry, regardless of the
++  // configured endpoint or the MONGOSH_TELEMETRY_ENDPOINT environment
++  // variable. Returning the no-op sink unconditionally means TelemetryClient
++  // and ThrottledAnalytics are never constructed and no HTTP request is ever
++  // made — not "collect locally but don't send", removed outright.
++  return { analytics: new ToggleableAnalytics(), telemetryEndpoint: '' };
+ }

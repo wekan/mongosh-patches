@@ -46,4 +46,31 @@ grep -q 'fromJSON(needs.bundle.outputs.targets)' "$all" && ok 'full matrix uses 
 
 grep -q 'plan-targets.mjs' "$root/build.sh" && ok 'local all build checks published runtime pairs' || bad 'local all build unconditionally schedules missing runtimes'
 node --test "$root/tests/source-identity.test.mjs" && ok 'source identity tests pass' || bad 'source identity tests failed'
+
+# Telemetry-removal patch: verified checksum, applies to a fresh upstream
+# checkout, and actually removes the network send / device fingerprinting /
+# opt-out banner rather than just adding a flag somewhere.
+telemetry_patch="$root/dist/all/remove-telemetry.patch"
+if [ -f "$telemetry_patch" ]; then
+  (cd "$(dirname "$telemetry_patch")" && sha256sum -c "$(basename "$telemetry_patch" .patch).sha256sum" >/dev/null) \
+    && ok 'telemetry-removal patch checksum matches' || bad 'telemetry-removal patch checksum mismatch'
+  grep -q 'export async function resolveToggleableAnalytics' "$telemetry_patch" \
+    && grep -q "analytics: new ToggleableAnalytics(), telemetryEndpoint: ''" "$telemetry_patch" \
+    && ok 'telemetry-removal patch makes analytics an unconditional no-op' \
+    || bad 'telemetry-removal patch does not neutralize the analytics sink'
+  grep -q 'resolveWritableHomeBase' "$telemetry_patch" \
+    && ok 'telemetry-removal patch adds a writable-home fallback' \
+    || bad 'telemetry-removal patch is missing the home-directory fallback'
+  grep -q 'No usage data is collected or sent by this build' "$telemetry_patch" \
+    && ok 'telemetry-removal patch replaces the opt-out banner with a removed-not-disabled notice' \
+    || bad 'telemetry-removal patch keeps the upstream opt-out banner'
+  if ! grep -q '^+.*getMachineId' "$telemetry_patch" && grep -q "return 'unknown';" "$telemetry_patch"; then
+    ok 'telemetry-removal patch drops native machine-id fingerprinting'
+  else
+    bad 'telemetry-removal patch still fingerprints the machine'
+  fi
+else
+  bad 'dist/all/remove-telemetry.patch is missing'
+fi
+
 [ "$fails" -eq 0 ] || exit 1

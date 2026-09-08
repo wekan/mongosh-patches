@@ -8,6 +8,27 @@ matching ready-made Node.js runtime from
 [wekan/node-patches releases](https://github.com/wekan/node-patches/releases).
 Node.js and V8 are never rebuilt here.
 
+## Telemetry is removed, not disabled
+
+`dist/all/remove-telemetry.patch` applies to every target. It makes
+`resolveToggleableAnalytics()` return the no-op analytics sink
+unconditionally, so `TelemetryClient`/`ThrottledAnalytics` are never
+constructed and no HTTP request is ever made, regardless of the configured
+endpoint or `MONGOSH_TELEMETRY_ENDPOINT`. It also stops the native
+machine-id lookup that only existed to key telemetry throttle state, and
+replaces the upstream "pseudo-anonymous usage data is collected ... you can
+opt out by running disableTelemetry()" startup banner with a notice that
+this fork does not collect or send anything. `disableTelemetry()` still
+exists as a no-op for script compatibility.
+
+The same patch also fixes mongosh's config/history file handling in a
+container that runs as a user with no home directory entry: `os.homedir()`
+then resolves to an unwritable path like `/nonexistent`, which previously
+produced a startup `EACCES ... mkdir '/nonexistent'` warning and a "Could
+not open history file" error on every session. Config/log/history storage
+now falls back to a writable directory under the OS temp dir when the home
+directory is not writable.
+
 Each build resolves upstream `main` once, fetches that exact full commit, and
 names the release/tag `main-<12-character-hash>` (for example,
 `main-79267331504d`). A `mongosh-source.json` records the full SHA in the release
