@@ -30,6 +30,32 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/e042127">Remove telemetry and fix startup errors in a homeless container user</a>. Thanks to xet7.</summary>
+
+`dist/all/remove-telemetry.patch` makes `resolveToggleableAnalytics()` return
+the no-op analytics sink unconditionally, so no telemetry HTTP request is
+ever made regardless of the configured endpoint or
+`MONGOSH_TELEMETRY_ENDPOINT`, and drops the native machine-id lookup that
+only existed to key telemetry throttle state. The startup banner is
+replaced with a notice that this fork does not collect or send anything,
+instead of upstream's opt-out message which says data IS collected.
+`disableTelemetry()` stays as a no-op for script compatibility.
+
+The same patch fixes the errors seen running mongosh inside
+`ghcr.io/wekan/ferretdb` as its default non-root user, which has no
+`/etc/passwd` entry: `os.homedir()` then resolves to the unwritable
+`/nonexistent`, producing a startup `EACCES ... mkdir '/nonexistent'`
+warning and "Could not open history file" on every session.
+Config/log/history storage now falls back to a writable directory under the
+OS temp dir when the home directory is not writable. The patch is
+checksum-verified and applies to every target; tests/workflow-logic.sh
+checks the checksum, that the analytics sink is truly unconditional, that
+machine-id fingerprinting is gone, that the writable-home fallback exists,
+and that the opt-out banner text is replaced.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/c4406fd49ac71f0a21afa36b5b4fbba66d4aabf8">Build the newest upstream main commit as main-HASH</a>. Thanks to xet7.</summary>
 
 Source resolution now reads upstream main once, fetches that exact full commit,
