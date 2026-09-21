@@ -30,6 +30,16 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/a990a21">Require Node.js 26 and npm 12 for mongosh packages</a>. Thanks to xet7.</summary>
+
+Package the newest Node.js 26 runtime and use npm 12.0.2 in build workflows.
+Release planning rejects runtimes from another Node.js major, and the bundle
+builder verifies its Node.js and npm versions before packaging. Target planning
+and workflow logic tests pass; platform packages will be built by GitHub workflows.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/e042127">Remove telemetry and fix startup errors in a homeless container user</a>. Thanks to xet7.</summary>
 
 `dist/all/remove-telemetry.patch` makes `resolveToggleableAnalytics()` return
