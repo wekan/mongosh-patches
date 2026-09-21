@@ -7,6 +7,8 @@ one architecture-independent production bundle, and combines it with the
 matching ready-made Node.js runtime from
 [wekan/node-patches releases](https://github.com/wekan/node-patches/releases).
 Node.js and V8 are never rebuilt here.
+Bundle builds use Node.js 26 and npm 12.0.2. Packages accept only a published
+Node.js 26.x release from node-patches, with a matching binary and checksum.
 
 ## Telemetry is removed, not disabled
 

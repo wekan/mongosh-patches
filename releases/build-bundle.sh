@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 : "${MONGOSH_VERSION:?MONGOSH_VERSION is required}"
+[[ "$(node --version)" == v26.* ]] || { echo 'mongosh builds require Node.js 26' >&2; exit 1; }
+[[ "$(npm --version)" == 12.0.2 ]] || { echo 'mongosh builds require npm 12.0.2' >&2; exit 1; }
 npm ci --ignore-scripts=false
 # Upstream tags point at the source commit from which the release is prepared;
 # its cli package and shell constant still contain the preceding version. Apply

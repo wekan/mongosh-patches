@@ -3,6 +3,7 @@
 // Node release. Missing mongosh packages remain eligible on a later rerun.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
+const nodeMajor = fs.readFileSync(new URL('../node-major.txt', import.meta.url), 'utf8').trim();
 export const runtimes = {
   amd64: 'node-x64', arm64: 'node-arm64', armhf: 'node-armhf',
   armv6: 'node-armv6', armv7: 'node-armv7', i386: 'node-i386',
@@ -14,6 +15,7 @@ export const runtimes = {
 };
 export function planTargets(release, existing) {
   if (!release || !/^v\d+\.\d+\.\d+$/.test(release.tag_name) ||
+      !release.tag_name.startsWith(`v${nodeMajor}.`) ||
       release.draft === true || release.prerelease === true ||
       !Array.isArray(release.assets)) throw new Error('Expected a published stable Node release with assets');
   const assets = new Set(release.assets.map(a => a.name));

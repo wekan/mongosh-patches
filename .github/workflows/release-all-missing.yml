@@ -46,8 +46,9 @@ jobs:
         run: bash _patches/releases/prepare-source.sh _patches "$REQUESTED_SOURCE"
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
           cache: npm
+      - run: npm install --global npm@12.0.2
       - run: bash _patches/releases/build-bundle.sh
       - uses: actions/upload-artifact@v7
         with:

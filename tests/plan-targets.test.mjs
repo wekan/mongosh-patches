@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { planTargets, runtimes } from '../releases/plan-targets.mjs';
 const assets = Object.values(runtimes).flatMap(name => [{name}, {name: `${name.replace(/\.exe$/, '')}.sha256sum`}]);
-const release = {tag_name:'v24.20.0', assets};
+const release = {tag_name:'v26.9.0', assets};
 test('all sixteen complete runtime pairs remain registered', () => {
   const plan = planTargets(release);
   assert.equal(plan.targets.length, 16);
@@ -32,5 +32,5 @@ test('missing-only waits for runtime availability and later repairs incomplete a
   assert.deepEqual(planTargets(unavailable,existing).targets,[]);
 });
 test('malformed or unpublished release metadata fails rather than claiming success', () => {
-  for(const value of [null,{}, {...release,assets:null}, {...release,draft:true}, {...release,prerelease:true}]) assert.throws(()=>planTargets(value));
+  for(const value of [null,{}, {...release,assets:null}, {...release,draft:true}, {...release,prerelease:true}, {...release,tag_name:'v24.21.0'}]) assert.throws(()=>planTargets(value));
 });
