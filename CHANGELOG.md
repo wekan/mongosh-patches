@@ -30,6 +30,20 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/24051287cce871bd96b8fd5bd914efc15a127cc6">Distinguish known dependency keyword false positives from new findings</a>. Thanks to xet7.</summary>
+
+Report documented, exact dependency keyword matches as known false
+positives for default outbound reporting. New or changed matches remain
+unclassified warnings for review. Independent source and binary risk
+checks remain active. Current dependency inventories have no matches
+requiring new exemptions. Positive and negative launcher tests, risk
+tests and offline audits pass across all six release repositories.
+This changes release logs only; no application UI or hosted release
+was exercised. Existing Upcoming regression coverage is retained.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/2ff2f1d781daf2391d365d309ff4a58e88e6fbf8">Fix Windows release source paths and allow scoped version links</a>. Thanks to xet7.</summary>
 
 Pass a shell-relative checkout path to the Node release resolver so
