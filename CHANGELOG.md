@@ -30,6 +30,16 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/485f8a9">Report telemetry gate failures clearly in both release workflows</a>. Thanks to xet7.</summary>
+
+Source and bundle checks now emit GitHub error annotations, empty bundles fail,
+and runtime regression failures explicitly stop packaging. Both workflows name
+the telemetry-checked build. Source/patch/artifact tests and the compiled
+eval/REPL network-guard tests pass.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/9aad034">Remove remaining telemetry and require upstream review</a>. Thanks to xet7.</summary>
 
 The earlier sink replacement still left local telemetry collection and exported
