@@ -30,6 +30,25 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/212b3f6">Fix telemetry patch application to upstream main</a>. Thanks to xet7.</summary>
+
+The September 23 bundle job stopped before compilation because the telemetry
+patch expected an older upstream comment. Refresh its context and checksum for
+commit `1270eeb5425c13c10f9b25241cff43c1c4b82e6f`, retaining telemetry removal
+and strict patch application. An unchanged upstream fixture now reproduces the
+old failure. Regression tests apply every hunk, execute the no-op resolver, check
+the device-ID/banner/home-path changes, and reject incompatible source without
+partially patching other files.
+
+The workflow logic suite passes. With Node.js 26.9.0 and npm 12.0.2, all 18 CLI
+workspaces compile and webpack produces the bundle with warnings. The CLI reports
+`2.10.0-main.1270eeb5425c`; a no-database evaluation returns 42. The local sandbox
+blocks the normal home-directory write and prints a warning during that smoke
+test. Target-specific archives and GitHub-hosted builds were not run.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/a990a21">Require Node.js 26 and npm 12 for mongosh packages</a>. Thanks to xet7.</summary>
 
 Package the newest Node.js 26 runtime and use npm 12.0.2 in build workflows.
