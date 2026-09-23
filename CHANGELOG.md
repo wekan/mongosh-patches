@@ -30,6 +30,17 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/757659f78a45f71b164e846e2ba5ae759feb4631">Accept valid GitHub SSH origins in release launchers</a>. Thanks to xet7.</summary>
+
+Release All and Release All Missing accept HTTPS and SSH clone URLs
+with or without .git, including git@github.com:wekan/mongosh-patches.
+Incorrect repositories and lookalike hosts still stop the release.
+Offline positive and negative launcher tests and source audits pass;
+no hosted release was run.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/798bb7e">Add release menus and automated dependency checks</a>. Thanks to xet7.</summary>
 
 Add Release All and Release All Missing to both shell and Windows menus.
