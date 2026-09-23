@@ -49,7 +49,8 @@ jobs:
           node-version: 26
           cache: npm
       - run: npm install --global npm@12.0.2
-      - run: bash _patches/releases/build-bundle.sh
+      - name: Build with source, artifact and runtime telemetry checks
+        run: bash _patches/releases/build-bundle.sh
       - uses: actions/upload-artifact@v7
         with:
           name: mongosh-missing-bundle

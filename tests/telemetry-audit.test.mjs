@@ -39,6 +39,8 @@ test('bundle audit rejects the removed client, local collection and fingerprint 
     const file = join(root, 'mongosh.js');
     writeFileSync(file, 'console.log("Telemetry has been removed from this build");');
     assert.doesNotThrow(() => auditBundle(file));
+    writeFileSync(file, '');
+    assert.throws(() => auditBundle(file), /empty mongosh bundle/);
     for (const value of ['TelemetryClient', 'commands_repl', 'getAiAgent',
       '"mge=', '@mongodb-js/native-machine-id', 'Sending telemetry event']) {
       writeFileSync(file, `/* bundled dependency */ ${value}`);
@@ -66,6 +68,7 @@ test('packaging rejects an old telemetry bundle before downloading a runtime', (
       env: { ...process.env, NODE_PATCHES_REPO: 'invalid/invalid' },
     });
     assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /::error::Telemetry audit failed:/);
     assert.match(result.stderr, /Telemetry implementation remains/);
     assert.doesNotMatch(result.stderr, /curl/);
   } finally { rmSync(root, { recursive: true, force: true }); }

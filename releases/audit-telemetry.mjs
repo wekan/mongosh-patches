@@ -43,6 +43,7 @@ export function auditSource(root, reviewed) {
 // Scan the actual production artifact, including bundled dependencies.
 export function auditBundle(file) {
   const bundle = readFileSync(file, 'utf8');
+  if (!bundle.trim()) throw new Error('Missing or empty mongosh bundle: ' + file);
   const forbidden = ['mongosh-telemetry.mongodb.com', 'Sending telemetry event',
     'Persisted telemetry throttle state', 'commands_repl', 'sequence_truncated',
     'KNOWN_AGENT_ENV_VARS', 'getAiAgent', 'TelemetryClient', 'ThrottledAnalytics',
@@ -62,5 +63,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const count = auditSource(resolve(process.argv[2] || '.'), manifest);
       console.log(`Telemetry audit passed: ${count} reviewed source/dependency files`);
     }
-  } catch (error) { console.error(error.message); process.exitCode = 1; }
+  } catch (error) { console.error('::error::Telemetry audit failed: ' + error.message); process.exitCode = 1; }
 }

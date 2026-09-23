@@ -25,7 +25,10 @@ if [ -n "${MONGOSH_VERSION:-}" ] && [ "$actual_version" != "$MONGOSH_VERSION" ];
   exit 2
 fi
 MONGOSH_TEST_BUNDLE="$PWD/packages/cli-repl/dist/mongosh.js" \
-  node --test "$(dirname "$0")/../tests/telemetry-runtime.test.mjs"
+  node --test "$(dirname "$0")/../tests/telemetry-runtime.test.mjs" || {
+    echo '::error::Telemetry runtime regression checks failed; refusing to package mongosh.' >&2
+    exit 1
+  }
 mkdir -p out
 cp packages/cli-repl/dist/mongosh.js out/mongosh.js
 cp mongosh-source.json out/mongosh-source.json

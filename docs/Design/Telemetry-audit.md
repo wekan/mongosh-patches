@@ -81,3 +81,10 @@ directory: git apply inherited the enclosing repository and skipped its paths.
 The patch fixture tests were valid. This audit corrected the validation setup:
 each extracted source gets its own Git repository, patch application is checked,
 and the patched source hashes must match before building.
+
+Both release workflows explicitly name their telemetry-checked bundle build.
+Source and artifact failures now print `::error::Telemetry audit failed`;
+runtime regression failures also produce an error annotation and stop packaging.
+An empty bundle is rejected. Both packaging paths continue to scan the downloaded
+JavaScript before fetching a runtime. Local audit tests and compiled eval/REPL
+network-guard tests passed again with these gates.
