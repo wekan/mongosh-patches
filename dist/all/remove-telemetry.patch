@@ -127,9 +127,9 @@ index 54bc844..3e0822a 100644
  
  export type SetupTelemetryAnalyticsParams = {
    /**
-@@ -46,36 +36,13 @@ export type SetupTelemetryAnalyticsResult = {
-  * logged locally, just not sent. This is also why CI is safe without any
-  * special-casing: with no endpoint configured, no HTTP requests are made.
+@@ -45,36 +35,13 @@ export type SetupTelemetryAnalyticsResult = {
+  * (`isTelemetryEnabled()` is independent of the endpoint) — events are still
+  * logged locally, just not sent.
   */
 -export async function resolveToggleableAnalytics({
 -  configuredTelemetryEndpoint,

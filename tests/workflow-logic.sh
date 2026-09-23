@@ -73,4 +73,6 @@ else
   bad 'dist/all/remove-telemetry.patch is missing'
 fi
 
+node --test "$root/tests/telemetry-patch.test.mjs" && ok 'upstream telemetry patch regression tests pass' || bad 'upstream telemetry patch regression tests failed'
+
 [ "$fails" -eq 0 ] || exit 1
