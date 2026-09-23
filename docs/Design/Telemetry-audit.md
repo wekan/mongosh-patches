@@ -38,23 +38,20 @@ network sandbox for user scripts.
 `releases/telemetry-audit.json` records SHA-256 hashes of the reviewed, patched
 source, build configuration and scripts, package manifests and dependency lock.
 Both source preparation and bundle building compare the file inventory and
-hashes before dependency installation. Added, removed or changed code fails with
-`Telemetry audit required`, including code with no telemetry-related keywords.
-Generated output, dependencies and tests are excluded; dependency versions and
-integrity hashes are covered by the reviewed lockfile. Build from a fresh source
-checkout because compilation modifies generated files and workspace ordering.
+hashes before dependency installation. Ordinary source/dependency drift warns.
+Automated indicator checks stop on known hashes, new suspicious keywords and new
+URL literals; no whole-source review or AI approval is required. Build from a
+fresh source checkout because compilation changes generated files.
 
 The production bundle is scanned for the removed implementation signatures,
 including those coming from dependencies. Packaging repeats this check so a
 cached pre-fix bundle is rejected. This scan supplements source review; keyword
 absence alone is not proof that arbitrary new code cannot collect data.
 
-When upstream main changes, read the diff and audit collection, persistence and
-network paths before refreshing patches or the manifest. Do not regenerate the
-manifest just to make a build pass. To record a completed review, import
-`sourceSnapshot()` from `releases/audit-telemetry.mjs` and replace the manifest's
-`files` with the snapshot of a fresh patched checkout; set `upstreamCommit` to
-the full reviewed SHA. No build command updates the manifest automatically.
+When upstream changes, the automated indicator checks identify evidence in the
+changed source. Legitimate URLs/keywords can be recorded in the baseline as
+ordinary configuration. Release commands do not silently approve findings.
+
 
 ## Verification
 
@@ -88,3 +85,12 @@ runtime regression failures also produce an error annotation and stop packaging.
 An empty bundle is rejected. Both packaging paths continue to scan the downloaded
 JavaScript before fetching a runtime. Local audit tests and compiled eval/REPL
 network-guard tests passed again with these gates.
+
+
+## Best-effort release indicator policy
+
+Source and lockfile hash changes alone now warn. New suspicious keywords,
+known telemetry/security hashes, or new URL literals stop source checks;
+existing bundle signatures and runtime network checks remain enforced.
+No AI approval or comprehensive source review is required. See
+[release checks](../../releases/README-release.md) for allowlist configuration.

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 root="$(cd "$(dirname "$0")" && pwd)"
+mkdir -p "$root/.tools/tmp"
+export TMPDIR="$root/.tools/tmp"
 targets='amd64 arm64 armhf armv6 armv7 i386 ppc64le s390x riscv64 loong64 win64 win-arm64 win32 mac-amd64 mac-arm64 freebsd-x64'
 
 build_bundle() {
@@ -36,16 +38,19 @@ build_all() (
 )
 
 case "${1:-menu}" in
+  release-all|release-all-missing) command="$1"; shift; exec bash "$root/releases/$command.sh" "$@" ;;
   all) build_all ;;
   bundle) build_bundle ;;
   amd64|arm64|armhf|armv6|armv7|i386|ppc64le|s390x|riscv64|loong64|win64|win-arm64|win32|mac-amd64|mac-arm64|freebsd-x64) build_target "$1" ;;
   menu)
-    printf '1) Build bundle\n2) Package current platform\n3) Package all targets\nSelection: '
+    printf '1) Build bundle\n2) Package current platform\n3) Package all targets\n4) Release All\n5) Release All Missing\nSelection: '
     read -r choice
     case "$choice" in
       1) build_bundle ;;
       2) case "$(uname -s)-$(uname -m)" in Linux-x86_64) build_target amd64;; Linux-aarch64) build_target arm64;; Darwin-x86_64) build_target mac-amd64;; Darwin-arm64) build_target mac-arm64;; *) echo 'Unsupported current platform' >&2; exit 2;; esac ;;
       3) build_all ;;
+      4) exec bash "$root/releases/release-all.sh" ;;
+      5) exec bash "$root/releases/release-all-missing.sh" ;;
       *) echo 'Unknown selection' >&2; exit 2 ;;
     esac ;;
   *) echo "Usage: $0 [menu|bundle|all|TARGET]" >&2; exit 2 ;;

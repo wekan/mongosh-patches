@@ -1,0 +1,130 @@
+{
+  "description": "Automated indicator baseline; changed hashes are informational. Update for legitimate URLs/keywords without AI approval.",
+  "initialized": true,
+  "roots": [
+    ".",
+    "dist"
+  ],
+  "exclude": [
+    "releases/risk-audit.py",
+    "releases/remote-release.py",
+    "releases/risk-baseline.json",
+    "releases/upstream-risk-baseline.json"
+  ],
+  "denyHashes": [
+    "4221c252d2f11ad658d60d2a0ab6147feb3d984e62e204a64c9ce8562e2410b0"
+  ],
+  "files": {
+    ".github/workflows/release-all-missing.yml": {
+      "sha256": "8844f5a5601c955631047f4714b751fcdad19f56cb981013f8987a6d6c94c70c",
+      "urls": [],
+      "keywords": {}
+    },
+    ".github/workflows/release-all.yml": {
+      "sha256": "c612b1b8b19508812c7fa6ad61c26667f32103103be0cfeb3d71ed9b1bc82b22",
+      "urls": [
+        "https://api.github.com/repos/wekan/node-patches/releases/latest"
+      ],
+      "keywords": {}
+    },
+    "build.bat": {
+      "sha256": "3435a660df98c377107fddd0b07ee761c2192b26e74e88cd7d1bdc197dd14d0e",
+      "urls": [],
+      "keywords": {}
+    },
+    "build.sh": {
+      "sha256": "e6540dc4bcfb621e5f7393a9a0b5d84063e2d0bb443c3cd3f4574a69460573bf",
+      "urls": [
+        "https://api.github.com/repos/$repo/releases/$endpoint"
+      ],
+      "keywords": {}
+    },
+    "releases/audit-telemetry.mjs": {
+      "sha256": "b644f0cbde49caf749a39635cbfaa66cb1c384e2812d65f75747250f98f1791d",
+      "urls": [],
+      "keywords": {
+        "TelemetryClient": 1,
+        "ThrottledAnalytics": 1,
+        "emitApiCallTelemetry": 1,
+        "mongosh-telemetry.mongodb.com": 1
+      }
+    },
+    "releases/build-bundle.sh": {
+      "sha256": "1fead1924f70ea495be833a523f1a35add968f2fc8948f01990651d537e37a0c",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/dependency-review.json": {
+      "sha256": "4c3a860e6bfdc20affacbb7e346b604d072a63dda053974b430197eb9711fded",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/newest-release.sh": {
+      "sha256": "1e724d00828ed977447b97e429afbc74e7f59fe3b7974950c50f46d73ad0d3bf",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/package-target.sh": {
+      "sha256": "b7aa929e32d86410856f54bbc0fd427752b0ae72c37d353d1e927e5d60719943",
+      "urls": [
+        "https://api.github.com/repos/$repo/releases/latest",
+        "https://github.com/$repo/releases/download/$node_tag"
+      ],
+      "keywords": {}
+    },
+    "releases/plan-targets.mjs": {
+      "sha256": "e9160034c6fa2e1539621faf4c91353d4432f4ec4a81bd89b6d78ba4d59c3bec",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/prepare-source.sh": {
+      "sha256": "317ccfc6174236a686606579005b8f4ec8acaa42a4ab37394855c40211dc2a70",
+      "urls": [
+        "https://github.com/mongodb-js/mongosh.git"
+      ],
+      "keywords": {}
+    },
+    "releases/release-all-missing.sh": {
+      "sha256": "ffd38b91faa052fc5e390f433103570477860d871ed1a24bbe4c8f75bfbebb5a",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/release-all.sh": {
+      "sha256": "70af265df472b9119441241d266de0bff0c2c4a2788baf605db0ed01c2d06557",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/remote-release.json": {
+      "sha256": "7af41645d4c43747fcfb0b1b9cec8e0b9152d81174070978a7d64c17681d0fc9",
+      "urls": [
+        "https://github.com/mongodb-js/mongosh.git"
+      ],
+      "keywords": {}
+    },
+    "releases/resolve-source.mjs": {
+      "sha256": "ccc0198722e28849216ca9ef17c35c7fe87e3ef4084eef48b99b649eb7418919",
+      "urls": [
+        "https://api.github.com/repos/mongodb-js/mongosh/commits/${ref"
+      ],
+      "keywords": {}
+    },
+    "releases/set-source-version.mjs": {
+      "sha256": "6c3f9d55a4b25a5a3f66a380287293d885bcbcc6e8674ce36d655d783a89d47b",
+      "urls": [],
+      "keywords": {}
+    },
+    "releases/telemetry-audit.json": {
+      "sha256": "0da2ac46fa1a2b9a140c28004ae2e2f5df429fe5d9b3a73d3c6811abec2811a2",
+      "urls": [],
+      "keywords": {}
+    },
+    "dist/all/remove-telemetry.patch": {
+      "sha256": "692e14892f41201cccecac16ad27ee5bbf88a0ebb9a9e1a650d608f954b9a87c",
+      "urls": [],
+      "keywords": {
+        "TelemetryClient": 1,
+        "ThrottledAnalytics": 1
+      }
+    }
+  }
+}

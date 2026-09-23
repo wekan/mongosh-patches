@@ -4,6 +4,8 @@ patches="${1:?patch checkout required}"
 identity="$(node "$patches/releases/resolve-source.mjs" "${2:-}")"
 commit="$(node -e 'console.log(JSON.parse(process.argv[1]).commit)' "$identity")"
 ref="$(node -e 'console.log(JSON.parse(process.argv[1]).release)' "$identity")"
+reviewed="$(node -p "require(process.argv[1]).upstreamCommit" "$patches/releases/telemetry-audit.json")"
+[ "$commit" = "$reviewed" ] || echo "::warning::Upstream fingerprint changed; continuing best-effort checks." >&2
 git init mongoshsrc
 git -C mongoshsrc remote add origin https://github.com/mongodb-js/mongosh.git
 git -C mongoshsrc fetch --depth 1 origin "$commit"

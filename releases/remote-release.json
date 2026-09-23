@@ -1,0 +1,17 @@
+{
+  "repo": "wekan/mongosh-patches",
+  "kind": "mongosh",
+  "branch": "main",
+  "upcoming": "# Upcoming mongosh-patches release",
+  "audits": [],
+  "upstream": {
+    "url": "https://github.com/mongodb-js/mongosh.git",
+    "review": "releases/telemetry-audit.json"
+  },
+  "indicatorCommand": [
+    "python3",
+    "releases/risk-audit.py",
+    "--source",
+    "."
+  ]
+}

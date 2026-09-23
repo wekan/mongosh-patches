@@ -4,3 +4,4 @@ node_modules/
 *.new
 
 mongosh-source.json
+.tools/

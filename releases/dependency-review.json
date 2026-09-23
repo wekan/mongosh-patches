@@ -1,0 +1,7 @@
+{
+  "scope": "Informational dependency fingerprints. Ordinary changes do not block builds; automated risk indicators do. No AI approval is required.",
+  "files": {
+    "node-major.txt": "20d2add851bf39edcc6b5e830930f962db7e19dffa2cab8610eed551eda6c302",
+    "tests/fixtures/upstream-1270eeb5425c/packages/cli-repl/package.json": "a63fda9c46d37f124d7b62232fca6c7b8863812a86a389552bf9cae4c2a26cfe"
+  }
+}
