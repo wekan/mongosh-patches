@@ -60,8 +60,12 @@ requests and checks telemetry logs/state. Snippets are disabled in that test to
 isolate telemetry from their separate index-download feature.
 
 The complete Node.js 26.9.0/npm 12.0.2 build passes, including 18 workspaces,
-webpack, version verification and runtime smoke tests. Webpack reports optional
-module warnings; platform archives and database-connected sessions were not run.
+webpack, version verification and runtime smoke tests. A fresh local macOS ARM64
+build also passed database-connected insert, read, update and delete operations
+against isolated MongoDB and FerretDB servers, with no startup errors. Patched
+source and compiled-bundle telemetry checks and the eval/REPL network-guard
+tests passed. Webpack reports optional module warnings; target-specific platform
+archives and hosted release workflows were not run.
 This also corrects the earlier local build validation: the patch fixture tests
 were valid, but local git apply had inherited an enclosing repository and skipped
 paths. Fresh source now has its own repository and passes the patched-source
