@@ -30,6 +30,19 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/2ff2f1d781daf2391d365d309ff4a58e88e6fbf8">Fix Windows release source paths and allow scoped version links</a>. Thanks to xet7.</summary>
+
+Pass a shell-relative checkout path to the Node release resolver so
+Git Bash does not receive a native Windows path. This fixes the shared
+win64 and win-arm64 source-selection failure before compilation.
+Optional per-file URL patterns permit explicitly configured version
+links while other new hosts, paths and query strings still fail.
+Offline positive and negative release and indicator tests pass; native
+Windows builds and hosted publication were not run.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/757659f78a45f71b164e846e2ba5ae759feb4631">Accept valid GitHub SSH origins in release launchers</a>. Thanks to xet7.</summary>
 
 Release All and Release All Missing accept HTTPS and SSH clone URLs
