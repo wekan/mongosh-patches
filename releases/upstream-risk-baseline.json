@@ -4462,6 +4462,22 @@
       "sha256": "f0150267efe79166392d3a2fa2626c65582088510a18b4bfe409336727e5daf3",
       "urls": [],
       "keywords": {}
+    },
+    "scripts/nodejs-patches/002-workaround-node-bug-52229.patch": {
+      "sha256": "80e91cc16c0426611939ac10c31cb9250d8c1925b51d924a8de8ca37f038c62e",
+      "urls": [
+        "https://github.com/nodejs/node/issues/52229"
+      ],
+      "keywords": {},
+      "reason": "Known non-reporting reference URL in an added source comment; verified at upstream commit 166c7cdbdccf1a641a7a5f25ae913a098f7702cf."
+    },
+    "scripts/nodejs-patches/006-no-memfd_create-on-older-glibc.patch": {
+      "sha256": "13666bdda3b479e3b34a28b75bf0e9a625cdfbea327646bd5c1e261e8351d026",
+      "urls": [
+        "https://github.com/torvalds/linux/blob/fd57572253bc356330dbe5b233c2e1d8426c66fd/include/uapi/linux/memfd.h#L8-L14"
+      ],
+      "keywords": {},
+      "reason": "Known non-reporting reference URL in an added source comment; verified at upstream commit 166c7cdbdccf1a641a7a5f25ae913a098f7702cf."
     }
   }
 }

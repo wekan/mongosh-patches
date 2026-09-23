@@ -19,6 +19,25 @@ class RiskAudit(unittest.TestCase):
         self.file.write_text('console.log("local diagnostics"); fetch("https://service.example/api");')
         self.policy={'roots':['.'],'initialized':True,'files':r.collect(self.root,{'roots':['.']})}
     def tearDown(self):self.tmp.cleanup()
+    def test_upstream_patch_comment_links_pass_but_new_indicators_fail(self):
+        import shutil
+        fixture = ROOT/'tests/fixtures/upstream-166c7cdbdccf'
+        shutil.copytree(fixture/'scripts', self.root/'scripts')
+        policy = json.loads((ROOT/'releases/upstream-risk-baseline.json').read_text())
+        self.file.unlink()
+        r.inspect(self.root, policy)
+        path = self.root/'scripts/nodejs-patches/002-workaround-node-bug-52229.patch'
+        original = path.read_text()
+        for added, message in [('+// https://new-reporting.invalid/upload\n', 'new URL'),
+                               ('+sendTelemetry();\n', 'suspicious keyword')]:
+            path.write_text(original + added)
+            with self.assertRaisesRegex(ValueError, message):
+                r.inspect(self.root, policy)
+        path.write_text(original)
+        policy['files'].pop('scripts/nodejs-patches/002-workaround-node-bug-52229.patch')
+        with self.assertRaisesRegex(ValueError, 'new URL'):
+            r.inspect(self.root, policy)
+
     def test_ordinary_hash_changes_and_local_logging_do_not_block(self):
         self.file.write_text('console.log("more local diagnostics"); fetch("https://service.example/api");')
         r.inspect(self.root,self.policy)
