@@ -30,6 +30,19 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/009d0c5">Fix build audit false positives for upstream patch references</a>. Thanks to xet7.</summary>
+
+Record two exact upstream Node patch files whose added comment URLs link to
+Node issue 52229 and a Linux memfd header. These references do not send data;
+new URLs and telemetry keywords still fail the audit. The telemetry-removal
+patch applies to the failed upstream commit 166c7cdbdccf, and its 478-file
+fingerprint check and 565-file indicator scan pass. Positive and negative
+regressions and workflow tests pass. The full npm bundle and hosted release
+were not rebuilt.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/24051287cce871bd96b8fd5bd914efc15a127cc6">Distinguish known dependency keyword false positives from new findings</a>. Thanks to xet7.</summary>
 
 Report documented, exact dependency keyword matches as known false
