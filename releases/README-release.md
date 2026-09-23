@@ -59,3 +59,12 @@ retry that prepared version rather than incrementing again.
 Mongosh resolves upstream main to an immutable main-HASH release. Missing uses
 the existing release's source. Source/lockfile drift alone only warns; source
 indicators and actual telemetry in bundles still stop builds.
+
+Known dependency keyword false positives can be listed as exact lines under
+`knownKeywordMatches` in `dependency-review.json`, keyed by file path with a
+nonempty `reason`. Matching entries print as informational, not new warnings.
+New or changed lines remain `New/unclassified dependency keyword hints` for
+review. No wildcard module exemptions or automatic baselining are used.
+Source and binary risk checks run independently and are never suppressed by
+these metadata classifications. An empty classification list means no existing
+matches have been verified, not that future matches are safe.
