@@ -33,6 +33,7 @@ fi
 grep -q 'npm run webpack-build --workspace @mongosh/cli-repl' "$root/releases/build-bundle.sh" && ok 'upstream production bundle is used' || bad 'wrong bundle build'
 grep -q 'resolve-source.mjs' "$root/releases/newest-release.sh" && ok 'newest resolves upstream main' || bad 'newest source resolver absent'
 grep -q 'fetch --depth 1 origin "$commit"' "$root/releases/prepare-source.sh" && ok 'source fetch uses immutable commit' || bad 'source fetch is mutable'
+grep -q "require('node:path').resolve(process.argv\[1\])" "$root/releases/prepare-source.sh" && ok 'telemetry audit review file resolves as filesystem path' || bad 'telemetry audit review file is loaded as a package name'
 grep -q 'actual_version=.*--version' "$root/releases/build-bundle.sh" && ok 'bundle version is read back' || bad 'bundle version is not verified'
 grep -q 'actual_version.*MONGOSH_VERSION' "$root/releases/build-bundle.sh" && ok 'wrong-tag bundle fails' || bad 'wrong-tag bundle may be published'
 grep -q 'set-source-version.mjs.*MONGOSH_VERSION' "$root/releases/build-bundle.sh" && ok 'tag version is applied to release source' || bad 'source keeps the preceding version'
