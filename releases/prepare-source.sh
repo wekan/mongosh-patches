@@ -22,6 +22,7 @@ for section in all "${TARGET:-}"; do
     git apply "$patch"
   done
 done
+node "$patches/releases/audit-telemetry.mjs" .
 base_version="$(node -p "require('./packages/cli-repl/package.json').version")"
 [[ "$base_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Unexpected upstream package version' >&2; exit 2; }
 version="$base_version-main.${commit:0:12}"

@@ -1,17 +1,15 @@
-# Remove telemetry and tolerate an unwritable home directory
+# Remove telemetry implementation
 
-Applies to every target. Analytics resolves to the no-op sink regardless of the
-configured endpoint; device fingerprinting is removed and the startup notice
-states that no usage data is sent. Config/history paths fall back to the OS temp
-directory when the home directory is unwritable.
+Applies to every target. Removes collection, HTTP transmission, queues,
+identification, throttle persistence, API/session emitters, agent detection and
+automatic upstream update/marketing requests. Removes fingerprinting dependencies
+from both the package manifest and lockfile. Compatibility commands stay inert;
+normal local diagnostics, database connections and snippet features remain.
 
-The September 23 build of upstream commit
-`1270eeb5425c13c10f9b25241cff43c1c4b82e6f` failed because the analytics hunk
-expected an older comment. The hunk now matches that source and the SHA-256
-sidecar is refreshed. Application remains strict: unexpected source changes fail
-the build instead of skipping telemetry removal.
+The patch also provides the existing writable-home fallback for containers.
+It applies strictly to the reviewed upstream source; incompatible hunks fail.
 
-Run `bash tests/workflow-logic.sh` with Node.js 26. Its offline patch regression
-suite applies every hunk to the unchanged upstream fixture, executes the patched
-analytics resolver with inaccessible telemetry parameters, checks the other
-patched files, and verifies that incompatible source fails without partial edits.
+See [Telemetry audit](../../docs/Design/Telemetry-audit.md) for the source review,
+build gates, remaining non-telemetry network features and verification limits.
+Run `bash tests/workflow-logic.sh`; the bundle builder additionally exercises the
+compiled CLI with enabled telemetry settings and intercepted outbound requests.

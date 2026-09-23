@@ -12,16 +12,23 @@ Node.js 26.x release from node-patches, with a matching binary and checksum.
 
 ## Telemetry is removed, not disabled
 
-`dist/all/remove-telemetry.patch` applies to every target. It makes
-`resolveToggleableAnalytics()` return the no-op analytics sink
-unconditionally, so `TelemetryClient`/`ThrottledAnalytics` are never
-constructed and no HTTP request is ever made, regardless of the configured
-endpoint or `MONGOSH_TELEMETRY_ENDPOINT`. It also stops the native
-machine-id lookup that only existed to key telemetry throttle state, and
-replaces the upstream "pseudo-anonymous usage data is collected ... you can
-opt out by running disableTelemetry()" startup banner with a notice that
-this fork does not collect or send anything. `disableTelemetry()` still
-exists as a no-op for script compatibility.
+`dist/all/remove-telemetry.patch` applies to every target. It removes the HTTP
+telemetry client, event collectors, queues, throttle persistence, machine/OS
+fingerprinting and agent detection. Telemetry configuration cannot enable them.
+The historical `enableTelemetry()` and `disableTelemetry()` commands remain
+inert and report that telemetry has been removed. Automatic upstream update and
+marketing requests are removed too.
+
+Source preparation and building verify an inventory of reviewed source and
+dependency hashes. New upstream runtime code stops the build for review, even if
+it adds telemetry under a different name. The bundle builder runs network-guarded
+CLI smoke tests; building and packaging scan the artifact for removed telemetry
+implementations. See [the audit and review procedure](docs/Design/Telemetry-audit.md).
+
+Normal diagnostic logs, shell history, database/authentication traffic and snippet
+downloads remain. Snippet-index retrieval can happen at interactive startup;
+`snippetIndexSourceURLs: ""` disables that feature. Remaining shell HTTP requests
+have no device ID or OS fingerprint in the added User-Agent.
 
 The same patch also fixes mongosh's config/history file handling in a
 container that runs as a user with no home directory entry: `os.homedir()`

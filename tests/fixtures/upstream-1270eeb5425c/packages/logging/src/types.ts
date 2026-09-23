@@ -1,0 +1,55 @@
+import type { ApiEvent, MongoshBus } from '@mongosh/types';
+import type { MongoLogWriter } from 'mongodb-log-writer';
+import type { MongoshAnalytics } from './analytics-helpers';
+import type { MultiSet } from './helpers';
+
+export interface MongoshLoggingAndTelemetry {
+  attachLogger(logger: MongoLogWriter): void;
+  detachLogger(): Promise<void>;
+  /** Flush any remaining log or telemetry events. */
+  flush(): Promise<void>;
+}
+
+export type MongoshLoggingAndTelemetryArguments = {
+  bus: MongoshBus;
+  analytics: MongoshAnalytics;
+  userTraits: { platform: string } & {
+    [key: string]: unknown;
+  };
+  mongoshVersion: string;
+  /** Machine-specific ID */
+  deviceId: Promise<string> | string;
+  /**
+   * The resolved telemetry endpoint. When empty, telemetry is not being sent
+   * anywhere, so full event payloads are logged locally for debugging.
+   */
+  telemetryEndpoint?: string;
+};
+
+export type SessionTelemetryState = {
+  isInteractive: boolean;
+  timings: Record<string, number>;
+  errorCount: number;
+  mongoshrcLoaded: boolean;
+  mongorcWarning: boolean;
+  snippetLoadedCount: number;
+  shellFlag: boolean;
+  cliEvalCount: number;
+  cliFileCount: number;
+  evaluationCount: number;
+  commandsRepl: Record<string, number>;
+  commandsRc: Record<string, number>;
+  sequence: string[];
+  sequenceTruncated: boolean;
+};
+
+export type LoggingAndTelemetryBusEventState = {
+  hasStartedMongoshRepl: boolean;
+  apiCallTracking: {
+    isEnabled: boolean;
+    apiCalls: MultiSet<Pick<ApiEvent, 'class' | 'method'>>;
+    deprecatedApiCalls: MultiSet<Pick<ApiEvent, 'class' | 'method'>>;
+  };
+  usesShellOption: boolean;
+  session: SessionTelemetryState;
+};

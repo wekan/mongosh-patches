@@ -1,3 +1,575 @@
+diff --git a/package-lock.json b/package-lock.json
+index 4811c95..b74a6f2 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -7728,12 +7728,6 @@
+         "node": ">=10"
+       }
+     },
+-    "node_modules/@mongodb-js/device-id": {
+-      "version": "0.4.13",
+-      "resolved": "https://registry.npmjs.org/@mongodb-js/device-id/-/device-id-0.4.13.tgz",
+-      "integrity": "sha512-X9XLwl2sAN4cFPKBjr9fak7SJDxALcVNBz2PVx7uQbPSj+roHsQhWKWIG6yInT2oloo8e7VugtpZJG215YTIRQ==",
+-      "license": "Apache-2.0"
+-    },
+     "node_modules/@mongodb-js/devtools-connect": {
+       "version": "3.14.9",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-3.14.9.tgz",
+@@ -8011,12 +8005,6 @@
+       "resolved": "configs/eslint-config-mongosh",
+       "link": true
+     },
+-    "node_modules/@mongodb-js/get-os-info": {
+-      "version": "0.7.0",
+-      "resolved": "https://registry.npmjs.org/@mongodb-js/get-os-info/-/get-os-info-0.7.0.tgz",
+-      "integrity": "sha512-pAaBe0wPL0v9aS62OC52jwD3iEBGTD+i2Rppsr77mf0BCyb/PMJZW06PxviZDkaqDMEfpOXVfYDdwtj3gnzfPQ==",
+-      "license": "Apache-2.0"
+-    },
+     "node_modules/@mongodb-js/mongodb-constants": {
+       "version": "0.33.0",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-constants/-/mongodb-constants-0.33.0.tgz",
+@@ -8409,30 +8397,6 @@
+         "node": ">=8"
+       }
+     },
+-    "node_modules/@mongodb-js/native-machine-id": {
+-      "version": "0.3.14",
+-      "resolved": "https://registry.npmjs.org/@mongodb-js/native-machine-id/-/native-machine-id-0.3.14.tgz",
+-      "integrity": "sha512-Ux6AVCaRYeVCmagAxeRm6uoCe3hxj8lzywPFccFeRaIu4UHRtk1dS7tw1fpCax56PhhCoimKCBVUepD5Wf4ayg==",
+-      "hasInstallScript": true,
+-      "license": "Apache-2.0",
+-      "optional": true,
+-      "dependencies": {
+-        "node-addon-api": "^8.0.0"
+-      },
+-      "bin": {
+-        "native-machine-id": "dist/bin/machine-id.js"
+-      }
+-    },
+-    "node_modules/@mongodb-js/native-machine-id/node_modules/node-addon-api": {
+-      "version": "8.9.2",
+-      "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-8.9.2.tgz",
+-      "integrity": "sha512-VijLXbi3UACN69I0JVXJsX4tjACjNoQDgv2gTF6sx2wWEi8tkSg2eX8p5gSIFi8z2+DL3oHmY6OyKce38SDolg==",
+-      "license": "MIT",
+-      "optional": true,
+-      "engines": {
+-        "node": "^18 || ^20 || >= 21"
+-      }
+-    },
+     "node_modules/@mongodb-js/oidc-http-server-pages": {
+       "version": "1.2.6",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-1.2.6.tgz",
+@@ -38905,9 +38869,7 @@
+       "version": "2.12.0",
+       "license": "Apache-2.0",
+       "dependencies": {
+-        "@mongodb-js/device-id": "^0.4.13",
+         "@mongodb-js/devtools-proxy-support": "^0.7.5",
+-        "@mongodb-js/get-os-info": "^0.7.0",
+         "@mongosh/arg-parser": "^5.6.0",
+         "@mongosh/autocomplete": "^5.9.0",
+         "@mongosh/editor": "^5.9.0",
+@@ -38963,7 +38925,6 @@
+         "node": ">=18.19.0"
+       },
+       "optionalDependencies": {
+-        "@mongodb-js/native-machine-id": "^0.3.6",
+         "get-console-process-list": "^1.0.5",
+         "glibc-version": "^1.0.1",
+         "macos-export-certificate-and-key": "^2.0.1",
+diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
+index 8c65349..7d1c15d 100644
+--- a/packages/cli-repl/package.json
++++ b/packages/cli-repl/package.json
+@@ -57,19 +57,11 @@
+       ],
+       "glibc-version": [
+         "linux"
+-      ],
+-      "@mongodb-js/native-machine-id": [
+-        "linux",
+-        "darwin",
+-        "win32"
+       ]
+     }
+   },
+   "dependencies": {
+-    "@mongodb-js/device-id": "^0.4.13",
+     "@mongodb-js/devtools-proxy-support": "^0.7.5",
+-    "@mongodb-js/get-os-info": "^0.7.0",
+-    "@mongodb-js/native-machine-id": "^0.3.6",
+     "@mongosh/arg-parser": "^5.6.0",
+     "@mongosh/autocomplete": "^5.9.0",
+     "@mongosh/editor": "^5.9.0",
+@@ -120,7 +112,6 @@
+     "webpack-merge": "^5.8.0"
+   },
+   "optionalDependencies": {
+-    "@mongodb-js/native-machine-id": "^0.3.6",
+     "get-console-process-list": "^1.0.5",
+     "glibc-version": "^1.0.1",
+     "macos-export-certificate-and-key": "^2.0.1",
+diff --git a/packages/cli-repl/src/cli-repl.ts b/packages/cli-repl/src/cli-repl.ts
+index 4278f5a..2ef669c 100644
+--- a/packages/cli-repl/src/cli-repl.ts
++++ b/packages/cli-repl/src/cli-repl.ts
+@@ -30,8 +30,7 @@ import type { MongoshNodeReplOptions, MongoshIOProvider } from './mongosh-repl';
+ import MongoshNodeRepl from './mongosh-repl';
+ import type { MongoshLoggingAndTelemetry } from '@mongosh/logging';
+ import { setupLoggingAndTelemetry } from '@mongosh/logging';
+-import { ToggleableAnalytics, getAiAgent } from '@mongosh/logging';
+-import { resolveToggleableAnalytics } from './setup-analytics';
++import { ToggleableAnalytics } from '@mongosh/logging';
+ import type { MongoshBus } from '@mongosh/types';
+ import {
+   CliUserConfig,
+@@ -40,9 +39,8 @@ import {
+ } from '@mongosh/types';
+ import { promises as fs } from 'fs';
+ import path from 'path';
+-import { getOsInfo, type OsInfo } from '@mongodb-js/get-os-info';
+ import { UpdateNotificationManager } from './update-notification-manager';
+-import { getTimingData, markTime, summariseTimingData } from './startup-timing';
++import { markTime } from './startup-timing';
+ import type { IdPInfo } from 'mongodb';
+ import type {
+   AgentWithInitialize,
+@@ -55,7 +53,6 @@ import {
+   useOrCreateAgent,
+ } from '@mongodb-js/devtools-proxy-support';
+ import { fullDepthInspectOptions } from './format-output';
+-import { getDeviceIdForMongosh } from './device-id';
+ 
+ /**
+  * Connecting text key.
+@@ -132,8 +129,6 @@ export class CliRepl implements MongoshIOProvider {
+   updateNotificationManager: UpdateNotificationManager;
+   fetchMongoshUpdateUrlRegardlessOfCiEnvironment = false; // for testing
+   exitingForStartupError = false;
+-  deviceId: Promise<string> | string | undefined = undefined;
+-  osInfo: Promise<OsInfo> | OsInfo | undefined = undefined;
+   closeAbortController = new AbortController();
+ 
+   private loggingAndTelemetry: MongoshLoggingAndTelemetry | undefined;
+@@ -150,7 +145,7 @@ export class CliRepl implements MongoshIOProvider {
+     this.onExit = options.onExit;
+ 
+     this.config = {
+-      enableTelemetry: true,
++      enableTelemetry: false,
+     };
+ 
+     this.getCryptLibraryPaths = options.getCryptLibraryPaths;
+@@ -161,67 +156,25 @@ export class CliRepl implements MongoshIOProvider {
+     )
+       .on('error', (err: Error) => {
+         this.bus.emit('mongosh:error', err, 'config');
+-      })
+-      .on('new-config', () => {
+-        this.setTelemetryEnabled().catch((err: Error) => {
+-          this.bus.emit('mongosh:error', err, 'telemetry');
+-        });
+-      })
+-      .on('update-config', () => {
+-        this.setTelemetryEnabled().catch((err: Error) => {
+-          this.bus.emit('mongosh:error', err, 'telemetry');
+-        });
+       });
+ 
+     this.agent = useOrCreateAgent(this.proxyOptions);
+     const baseFetch = createFetch(this.agent ?? {});
+     const { version }: { version: string } = require('../package.json');
+-    this.fetch =
+-      ({ includeDeviceId }) =>
+-      async (url, init) => {
+-        const [
+-          { os_type, os_release, os_arch, os_linux_dist, os_linux_release },
+-          deviceId,
+-        ] = await Promise.all([
+-          this.getOsInfo(),
+-          (async () => {
+-            // includeDeviceId marks this request as a telemetry event.
+-            // We must verify telemetry is enabled before exposing the device ID
+-            // in the User-Agent header; requests without it get 'disabled'.
+-            if (!includeDeviceId || !(await this.isTelemetryEnabled())) {
+-              return 'disabled';
+-            }
+-            return await this.getDeviceId();
+-          })(),
+-        ]);
+-        const userAgentTags = [
+-          `mongosh/${version}`,
+-          os_type,
+-          os_release,
+-          os_arch,
+-          os_linux_dist ?? '',
+-          os_linux_release ?? '',
+-          deviceId,
+-        ]
+-          .map((s) => s.replace(/[^a-zA-Z0-9./_-]/g, '_'))
+-          .join('; ');
+-        return baseFetch(url, {
+-          ...init,
+-          headers: {
+-            ...init?.headers,
+-            'User-Agent': userAgentTags,
+-          },
+-        });
+-      };
++    // Requests needed for user-selected features carry no machine fingerprint.
++    this.fetch = () => async (url, init) => baseFetch(url, {
++      ...init,
++      headers: { ...init?.headers, 'User-Agent': `mongosh/${version}` },
++    });
+     this.updateNotificationManager = new UpdateNotificationManager({
+-      fetch: this.fetch({ includeDeviceId: true }),
++      fetch: this.fetch({ includeDeviceId: false }),
+       onInvalidMatchPattern: (err) =>
+         this.bus.emit('mongosh:error', err as Error, 'cta'),
+     });
+ 
+     // We can't really do anything meaningful if the output stream is broken or
+     // closed. To avoid throwing an error while writing to it, let's send it to
+-    // the telemetry instead
++    // the local diagnostic logger instead
+     this.output.on('error', (err: Error) => {
+       this.bus.emit('mongosh:error', err, 'io');
+     });
+@@ -272,13 +225,7 @@ export class CliRepl implements MongoshIOProvider {
+   }
+ 
+   get forceDisableTelemetry(): boolean {
+-    return (
+-      this.globalConfig?.forceDisableTelemetry ||
+-      (this.isContainerizedEnvironment &&
+-        !this.mongoshRepl.isInteractive &&
+-        !getAiAgent()) ||
+-      !!process.env.MONGOSH_FORCE_DISABLE_TELEMETRY_FOR_TESTING
+-    );
++    return true;
+   }
+ 
+   /** Setup log writer and start logging. */
+@@ -362,18 +309,6 @@ export class CliRepl implements MongoshIOProvider {
+     }
+   }
+ 
+-  private getDeviceId(): Promise<string> | string {
+-    return (this.deviceId ??= (async () =>
+-      (this.deviceId = await getDeviceIdForMongosh({
+-        bus: this.bus,
+-        signal: this.closeAbortController.signal,
+-      })))());
+-  }
+-
+-  private getOsInfo(): Promise<OsInfo> | OsInfo {
+-    return (this.osInfo ??= (async () => (this.osInfo = await getOsInfo()))());
+-  }
+-
+   private async _start(
+     driverUri: string,
+     driverOptions: DevtoolsConnectOptions
+@@ -383,8 +318,6 @@ export class CliRepl implements MongoshIOProvider {
+     await this.verifyNodeVersion();
+     markTime(TimingCategories.REPLInstantiation, 'verified node version');
+ 
+-    void this.getDeviceId(); // Populate in parallel
+-    void this.getOsInfo();
+ 
+     this.isContainerizedEnvironment =
+       await this.getIsContainerizedEnvironment();
+@@ -422,9 +355,7 @@ export class CliRepl implements MongoshIOProvider {
+     }
+     markTime(TimingCategories.REPLInstantiation, 'ensured shell homedir');
+ 
+-    // Read local and global configuration before setting up analytics so that
+-    // setupTelemetrySink() can resolve the telemetry endpoint from user config.
+-    // Errors are deferred and surfaced once logging/telemetry is in place.
++    // Read configuration before attaching the local diagnostic logger.
+     let configSetupError: Error | null = null;
+     try {
+       this.config = await this.configDirectory.generateOrReadConfig(
+@@ -437,40 +368,12 @@ export class CliRepl implements MongoshIOProvider {
+     this.globalConfig = await this.loadGlobalConfigFile();
+     markTime(TimingCategories.UserConfigLoading, 'read global config files');
+ 
+-    let analyticsSetupError: Error | null = null;
+-    try {
+-      await this.setupTelemetrySink();
+-    } catch (err: unknown) {
+-      // Need to delay emitting the error on the bus so that logging is in place
+-      // as well
+-      analyticsSetupError = err as Error;
+-    }
+-
+-    markTime(TimingCategories.Telemetry, 'created analytics instance');
++    this.loggingAndTelemetry = setupLoggingAndTelemetry({ bus: this.bus });
+ 
+-    this.loggingAndTelemetry = setupLoggingAndTelemetry({
+-      bus: this.bus,
+-      analytics: this.toggleableAnalytics,
+-      userTraits: {
+-        platform: process.platform,
+-        arch: process.arch,
+-        is_containerized: this.isContainerizedEnvironment,
+-        ...(await this.getOsInfo()),
+-      },
+-      mongoshVersion: version,
+-      deviceId: this.getDeviceId(),
+-      telemetryEndpoint: this.telemetryEndpoint,
+-    });
+-
+-    markTime(TimingCategories.Telemetry, 'completed telemetry setup');
+-
+-    // Surface deferred setup errors now that logging/telemetry listeners exist.
++    // Surface deferred setup errors now that the local logger exists.
+     if (configSetupError) {
+       this.warnAboutInaccessibleFile(configSetupError);
+     }
+-    if (analyticsSetupError) {
+-      this.bus.emit('mongosh:error', analyticsSetupError, 'analytics');
+-    }
+ 
+     await this.setLoggingEnabled(!(await this.getConfig('disableLogging')));
+ 
+@@ -588,11 +491,6 @@ export class CliRepl implements MongoshIOProvider {
+     if (willExecuteCommandLineScripts) {
+       this.mongoshRepl.setIsInteractive(willEnterInteractiveMode);
+ 
+-      this.bus.emit('mongosh:start-session', {
+-        isInteractive: false,
+-        jsContext: this.mongoshRepl.jsContext(),
+-        timings: summariseTimingData(getTimingData()),
+-      });
+ 
+       this.bus.emit('mongosh:start-loading-cli-scripts', {
+         usesShellOption: !!this.cliOptions.shell,
+@@ -608,9 +506,6 @@ export class CliRepl implements MongoshIOProvider {
+         return;
+       }
+       if (!this.cliOptions.shell) {
+-        // We flush the telemetry data as part of exiting. Make sure we have
+-        // the right config value.
+-        await this.setTelemetryEnabled();
+         await this.exit(0);
+         return;
+       }
+@@ -641,18 +536,10 @@ export class CliRepl implements MongoshIOProvider {
+ 
+     this.verifyPlatformSupport();
+ 
+-    // We only enable/disable here, since the rc file/command line scripts
+-    // can disable the telemetry setting.
+-    await this.setTelemetryEnabled();
+     this.bus.emit('mongosh:start-mongosh-repl', { version });
+     markTime(TimingCategories.REPLInstantiation, 'starting repl');
+     await this.mongoshRepl.startRepl(initialized);
+ 
+-    this.bus.emit('mongosh:start-session', {
+-      isInteractive: true,
+-      jsContext: this.mongoshRepl.jsContext(),
+-      timings: summariseTimingData(getTimingData()),
+-    });
+   }
+ 
+   private static getFileAndEvalInfo(cliOptions: CliOptions): {
+@@ -696,18 +583,8 @@ export class CliRepl implements MongoshIOProvider {
+   }
+ 
+   async setupTelemetrySink(): Promise<void> {
+-    const { analytics, telemetryEndpoint } = await resolveToggleableAnalytics({
+-      // `telemetryEndpoint` user config carries the production default.
+-      configuredTelemetryEndpoint: await this.getConfig('telemetryEndpoint'),
+-      // includeDeviceId adds device_id to the User-Agent header.
+-      fetch: this.fetch({ includeDeviceId: true }),
+-      metadataPath: this.shellHomeDirectory.paths.shellLocalDataPath,
+-      deviceId: this.getDeviceId(),
+-    });
+-    this.toggleableAnalytics = analytics;
+-    // Record the resolved endpoint so logging can decide whether to log full
+-    // event payloads (only when there is no endpoint to send them to).
+-    this.telemetryEndpoint = telemetryEndpoint;
++    this.toggleableAnalytics = new ToggleableAnalytics();
++    this.telemetryEndpoint = '';
+   }
+ 
+   async setLoggingEnabled(enabled: boolean): Promise<void> {
+@@ -718,54 +595,18 @@ export class CliRepl implements MongoshIOProvider {
+     }
+   }
+ 
+-  /**
+-   * Telemetry is only collected for sessions that are interactive or driven by
+-   * an AI agent. Scripts passed via --eval or as a file are not tracked, unless
+-   * they also enter the REPL afterwards (--shell).
+-   *
+-   * This is derived from the CLI options rather than from
+-   * `mongoshRepl.isInteractive`, so that it holds from process start - events
+-   * are emitted (and buffered by ToggleableAnalytics) before the REPL exists.
+-   */
++  /** Compatibility query: this build has no tracked session kinds. */
+   get isTrackedSessionKind(): boolean {
+-    return (
+-      CliRepl.getFileAndEvalInfo(this.cliOptions).willEnterInteractiveMode ||
+-      !!getAiAgent()
+-    );
++    return false;
+   }
+ 
+-  /**
+-   * Single source of truth for whether telemetry is currently enabled.
+-   * Combines the global `forceDisableTelemetry` kill switch with the
+-   * user-configurable `enableTelemetry` setting.
+-   *
+-   * This does not take the kind of session into account: it also gates whether
+-   * the device ID may be exposed in the update notification request, which
+-   * happens for non-interactive sessions too. Whether telemetry events are
+-   * collected is decided in setTelemetryEnabled().
+-   */
++  /** Compatibility query: telemetry cannot be enabled. */
+   async isTelemetryEnabled(): Promise<boolean> {
+-    return (
+-      !this.forceDisableTelemetry && !!(await this.getConfig('enableTelemetry'))
+-    );
++    return false;
+   }
+ 
+   async setTelemetryEnabled(): Promise<void> {
+-    if (this.globalConfig === null) {
+-      // This happens when the per-user config file is loaded before we have
+-      // started loading the global config file. Keep telemetry paused in that
+-      // case.
+-      return;
+-    }
+-
+-    // Single place deciding whether telemetry events are collected: the
+-    // user-facing setting, plus the kind of session this is. disable() also
+-    // discards events that ToggleableAnalytics buffered before this point.
+-    if ((await this.isTelemetryEnabled()) && this.isTrackedSessionKind) {
+-      this.toggleableAnalytics.enable();
+-    } else {
+-      this.toggleableAnalytics.disable();
+-    }
++    // Compatibility no-op: telemetry implementation has been removed.
+   }
+ 
+   async loadCommandLineFilesAndEval(
+@@ -1014,9 +855,9 @@ export class CliRepl implements MongoshIOProvider {
+   async getConfig<K extends keyof CliUserConfig>(
+     key: K
+   ): Promise<CliUserConfig[K]> {
+-    if (key === 'enableTelemetry' && this.forceDisableTelemetry) {
+-      return false as CliUserConfig[K];
+-    }
++    if (key === 'enableTelemetry') return false as CliUserConfig[K];
++    if (key === 'forceDisableTelemetry') return true as CliUserConfig[K];
++    if (key === 'telemetryEndpoint') return '' as CliUserConfig[K];
+     return (
+       (this.config as CliUserConfig)[key] ??
+       (this.globalConfig as CliUserConfig)?.[key] ??
+@@ -1036,15 +877,11 @@ export class CliRepl implements MongoshIOProvider {
+         "The 'forceDisableTelemetry' setting cannot be modified"
+       );
+     }
+-    if (key === 'enableTelemetry' && this.forceDisableTelemetry) {
+-      throw new MongoshRuntimeError(
+-        "Cannot modify telemetry settings while 'forceDisableTelemetry' is set to true"
+-      );
++    if (key === 'enableTelemetry' || key === 'telemetryEndpoint') {
++      if (value) throw new MongoshRuntimeError('Telemetry has been removed from this build');
++      return 'success';
+     }
+     this.config[key] = value;
+-    if (key === 'enableTelemetry') {
+-      await this.setTelemetryEnabled();
+-    }
+     if (key === 'disableLogging') {
+       await this.setLoggingEnabled(!value);
+     }
+@@ -1269,32 +1106,7 @@ export class CliRepl implements MongoshIOProvider {
+         }
+       }
+       markTime(TimingCategories.REPLInstantiation, 'output flushed');
+-      const analytics = this.toggleableAnalytics;
+-      let flushError: string | null = null;
+-      let flushDuration: number | null = null;
+       await this.loggingAndTelemetry?.flush();
+-
+-      if (analytics) {
+-        const flushStart = Date.now();
+-        try {
+-          await analytics.flush();
+-          markTime(TimingCategories.Telemetry, 'flushed analytics');
+-        } catch (err: any) {
+-          flushError = err.message;
+-        } finally {
+-          flushDuration = Date.now() - flushStart;
+-        }
+-      }
+-      this.logWriter?.info(
+-        'MONGOSH',
+-        mongoLogId(1_000_000_045),
+-        'analytics',
+-        'Persisted telemetry throttle state',
+-        {
+-          flushError,
+-          flushDuration,
+-        }
+-      );
+       await this.logWriter?.flush();
+ 
+       markTime(TimingCategories.Logging, 'flushed log writer');
+@@ -1410,49 +1222,7 @@ export class CliRepl implements MongoshIOProvider {
+   }
+ 
+   async fetchMongoshUpdateUrl() {
+-    const { quiet } = CliRepl.getFileAndEvalInfo(this.cliOptions);
+-    if (
+-      quiet ||
+-      (!this.fetchMongoshUpdateUrlRegardlessOfCiEnvironment &&
+-        (process.env.CI ||
+-          process.env.IS_CI ||
+-          this.isContainerizedEnvironment))
+-    ) {
+-      // No point in telling users about new versions if we are in
+-      // a CI or Docker-like environment. or the user has explicitly
+-      // requested no additional output.
+-      return;
+-    }
+-
+-    try {
+-      const updateURL = (await this.getConfig('updateURL')).trim();
+-      if (!updateURL) return;
+-
+-      const { version: currentVersion } = require('../package.json');
+-      const localFilePath = this.shellHomeDirectory.localPath(
+-        'update-metadata.json'
+-      );
+-
+-      this.bus.emit('mongosh:fetching-update-metadata', {
+-        updateURL,
+-        localFilePath,
+-        currentVersion,
+-      });
+-      await this.updateNotificationManager.fetchUpdateMetadata(
+-        updateURL,
+-        localFilePath,
+-        currentVersion
+-      );
+-      this.bus.emit('mongosh:fetching-update-metadata-complete', {
+-        latest:
+-          await this.updateNotificationManager.getLatestVersionIfMoreRecent(''),
+-        currentVersion,
+-        hasGreetingCTA:
+-          !!(await this.updateNotificationManager.getGreetingCTAForCurrentVersion()),
+-      });
+-    } catch (err: any) {
+-      this.bus.emit('mongosh:error', err, 'startup');
+-    }
++    // No automatic upstream update or marketing requests in this fork.
+   }
+ 
+   async getMoreRecentMongoshVersion(): Promise<string | null> {
 diff --git a/packages/cli-repl/src/config-directory.ts b/packages/cli-repl/src/config-directory.ts
 index b0a87bb..44a98a5 100644
 --- a/packages/cli-repl/src/config-directory.ts
@@ -106,8 +678,43 @@ index 8771da2..64261b8 100644
 -  }
 +  return 'unknown';
  }
+diff --git a/packages/cli-repl/src/mongosh-repl.ts b/packages/cli-repl/src/mongosh-repl.ts
+index 95a34f5..b383e05 100644
+--- a/packages/cli-repl/src/mongosh-repl.ts
++++ b/packages/cli-repl/src/mongosh-repl.ts
+@@ -628,14 +628,6 @@ class MongoshNodeRepl implements EvaluationListener {
+ 
+     markTime(TimingCategories.UserConfigLoading, 'set up history file');
+ 
+-    // Similar calls are added for plain-vm evaluation below
+-    (repl as any).on(asyncRepl.evalStart, () => {
+-      this.bus.emit('mongosh:evaluate-started');
+-    });
+-    (repl as any).on(asyncRepl.evalFinish, () => {
+-      this.bus.emit('mongosh:evaluate-finished');
+-    });
+-
+     repl.on('exit', () => {
+       // repl is already closed, no need to close it again via this.close()
+       if (this._runtimeState) this._runtimeState.repl = null;
+@@ -894,7 +886,6 @@ class MongoshNodeRepl implements EvaluationListener {
+         );
+       };
+     });
+-    this.bus.emit('mongosh:evaluate-started');
+     try {
+       process.addListener('SIGINT', asyncSigintHandler);
+       return await Promise.race([
+@@ -911,7 +902,6 @@ class MongoshNodeRepl implements EvaluationListener {
+       ]);
+     } finally {
+       process.removeListener('SIGINT', asyncSigintHandler);
+-      this.bus.emit('mongosh:evaluate-finished');
+     }
+   }
+ 
 diff --git a/packages/cli-repl/src/setup-analytics.ts b/packages/cli-repl/src/setup-analytics.ts
-index 54bc844..3e0822a 100644
+index 920636a..f9a1f24 100644
 --- a/packages/cli-repl/src/setup-analytics.ts
 +++ b/packages/cli-repl/src/setup-analytics.ts
 @@ -1,15 +1,5 @@
@@ -127,10 +734,29 @@ index 54bc844..3e0822a 100644
  
  export type SetupTelemetryAnalyticsParams = {
    /**
-@@ -45,36 +35,13 @@ export type SetupTelemetryAnalyticsResult = {
-  * (`isTelemetryEnabled()` is independent of the endpoint) — events are still
-  * logged locally, just not sent.
-  */
+@@ -27,54 +17,21 @@ export type SetupTelemetryAnalyticsParams = {
+ 
+ export type SetupTelemetryAnalyticsResult = {
+   /**
+-   * The analytics sink. When no endpoint is configured this is a no-op sink
+-   * (nothing is sent over the network); telemetry can still be "enabled" and
+-   * events are still written to the local log — they just have nowhere to be
+-   * sent.
++   * Inert compatibility sink. No events are collected, queued or sent.
+    */
+   analytics: ToggleableAnalytics;
+   /** The resolved telemetry endpoint, or '' when none is configured. */
+   telemetryEndpoint: string;
+ };
+ 
+-/**
+- * Build the analytics sink for a mongosh session.
+- *
+- * When no endpoint is configured there is nowhere to send events, so a no-op
+- * {@link ToggleableAnalytics} sink is returned. This does not disable telemetry
+- * (`isTelemetryEnabled()` is independent of the endpoint) — events are still
+- * logged locally, just not sent.
+- */
 -export async function resolveToggleableAnalytics({
 -  configuredTelemetryEndpoint,
 -  fetch,
@@ -163,6 +789,7 @@ index 54bc844..3e0822a 100644
 -      })
 -    ),
 -  };
++/** Compatibility resolver. No telemetry parameters are read or retained. */
 +export async function resolveToggleableAnalytics(
 +  _params: SetupTelemetryAnalyticsParams
 +): Promise<SetupTelemetryAnalyticsResult> {
@@ -173,3 +800,1672 @@ index 54bc844..3e0822a 100644
 +  // made — not "collect locally but don't send", removed outright.
 +  return { analytics: new ToggleableAnalytics(), telemetryEndpoint: '' };
  }
+diff --git a/packages/cli-repl/src/update-notification-manager.ts b/packages/cli-repl/src/update-notification-manager.ts
+index 9ad09ea..58176fc 100644
+--- a/packages/cli-repl/src/update-notification-manager.ts
++++ b/packages/cli-repl/src/update-notification-manager.ts
+@@ -1,239 +1,18 @@
+-import semver from 'semver';
+-import { promises as fs } from 'fs';
+ import type { RequestInit, Response } from '@mongodb-js/devtools-proxy-support';
+ import type { StyleDefinition } from './clr';
+ import type { BuildInfo } from './build-info';
+ 
+-// `match` is a regular expression tested against an env-like serialization of
+-// buildInfo() (one `key=value` per line, nested objects flattened as
+-// `parent.child=value`). A `match`-gated CTA is hidden when buildInfo is
+-// unavailable or when the regex fails to compile.
+-interface GreetingCTADetails {
+-  match?: string;
+-  chunks: {
+-    text: string;
+-    style?: StyleDefinition;
+-  }[];
+-}
+-
+-function serializeBuildInfo(buildInfo: Record<string, unknown>): string {
+-  const lines: string[] = [];
+-  for (const [key, value] of Object.entries(buildInfo)) {
+-    if (typeof value === 'object' && value !== null) {
+-      for (const line of serializeBuildInfo(value as Record<string, unknown>))
+-        lines.push(`${key}.${line}`);
+-    } else {
+-      lines.push(`${key}=${String(value)}`);
+-    }
+-  }
+-  return lines.join('\n');
+-}
+-
+-function ctaMatchesBuildInfo(
+-  match: string | undefined,
+-  buildInfo: BuildInfo | undefined,
+-  onInvalidMatchPattern: (err: unknown) => void
+-): boolean {
+-  if (!match) return true;
+-  if (!buildInfo) return false;
+-  try {
+-    return new RegExp(match, 'm').test(
+-      serializeBuildInfo(buildInfo as unknown as Record<string, unknown>)
+-    );
+-  } catch (err) {
+-    onInvalidMatchPattern(err);
+-    return false;
+-  }
+-}
+-
+-export interface MongoshVersionsContents {
+-  versions: {
+-    version: string;
+-    cta?: GreetingCTADetails;
+-  }[];
+-  cta?: GreetingCTADetails;
+-}
+-
+-interface MongoshUpdateLocalFileContents {
+-  lastChecked?: number;
+-  latestKnownMongoshVersion?: string;
+-  etag?: string;
+-  updateURL?: string;
+-  cta?: {
+-    [version: string]: GreetingCTADetails | undefined;
+-  };
+-}
+-
+-// Utility for fetching metadata about potentially available newer versions
+-// and returning that latest version if available.
++// Compatibility only: no automatic upstream requests, metadata cache or CTAs.
+ export class UpdateNotificationManager {
+-  private latestKnownMongoshVersion: string | undefined = undefined;
+-  private currentVersionGreetingCTA: GreetingCTADetails | undefined = undefined;
+-  private localFilesystemFetchInProgress: Promise<unknown> | undefined =
+-    undefined;
+-  private fetch: (url: string, init: RequestInit) => Promise<Response>;
+-  private onInvalidMatchPattern: (err: unknown) => void;
+-
+-  constructor({
+-    fetch,
+-    onInvalidMatchPattern,
+-  }: {
++  constructor(_options: {
+     fetch?: (url: string, init: RequestInit) => Promise<Response>;
+     onInvalidMatchPattern?: (err: unknown) => void;
+-  } = {}) {
+-    this.fetch =
+-      fetch ?? (() => Promise.reject(new Error('no fetch provided')));
+-    this.onInvalidMatchPattern = onInvalidMatchPattern ?? (() => {});
+-  }
+-
+-  async getLatestVersionIfMoreRecent(
+-    currentVersion: string
+-  ): Promise<string | null> {
+-    try {
+-      await this.localFilesystemFetchInProgress;
+-    } catch {
+-      /* already handled in fetchUpdateMetadata() */
+-    }
+-    if (!this.latestKnownMongoshVersion) return null;
+-    if (
+-      currentVersion &&
+-      !semver.gt(this.latestKnownMongoshVersion, currentVersion)
+-    )
+-      return null;
+-    if (currentVersion && semver.prerelease(currentVersion)) return null;
+-    return this.latestKnownMongoshVersion;
+-  }
+-
+-  async getGreetingCTAForCurrentVersion(buildInfo?: BuildInfo): Promise<
+-    | {
+-        text: string;
+-        style?: StyleDefinition;
+-      }[]
+-    | undefined
+-  > {
+-    try {
+-      await this.localFilesystemFetchInProgress;
+-    } catch {
+-      /* already handled in fetchUpdateMetadata() */
+-    }
+-
+-    const cta = this.currentVersionGreetingCTA;
+-    if (!cta) return undefined;
+-    if (!ctaMatchesBuildInfo(cta.match, buildInfo, this.onInvalidMatchPattern))
+-      return undefined;
+-    return cta.chunks;
+-  }
+-
+-  // Fetch update metadata, taking into account a local cache and an external
+-  // JSON feed. This function will throw in case it failed to load information
+-  // about latest versions.
+-  async fetchUpdateMetadata(
+-    updateURL: string,
+-    localFilePath: string,
+-    currentVersion: string
+-  ): Promise<void> {
+-    let localFileContents: MongoshUpdateLocalFileContents | undefined;
+-    await (this.localFilesystemFetchInProgress = (async () => {
+-      let localFileText = '';
+-      try {
+-        localFileText = await fs.readFile(localFilePath, 'utf-8');
+-      } catch (err: unknown) {
+-        // Do not fail if the error is just ENOENT
+-        if (
+-          !(
+-            err &&
+-            typeof err === 'object' &&
+-            'code' in err &&
+-            err.code === 'ENOENT'
+-          )
+-        )
+-          throw err;
+-      }
+-
+-      try {
+-        localFileContents = JSON.parse(localFileText);
+-      } catch {
+-        // ignore possibly corrupted file contents
+-      }
+-
+-      if (localFileContents?.updateURL !== updateURL) {
+-        // Invalidate local cache if the source URL has changed.
+-        localFileContents = undefined;
+-      }
+-
+-      if (localFileContents?.latestKnownMongoshVersion) {
+-        this.latestKnownMongoshVersion =
+-          localFileContents.latestKnownMongoshVersion;
+-      }
+-
+-      if (localFileContents?.cta && currentVersion in localFileContents.cta) {
+-        this.currentVersionGreetingCTA = localFileContents.cta[currentVersion];
+-      }
+-
+-      this.localFilesystemFetchInProgress = undefined;
+-    })());
+-
+-    if (
+-      localFileContents?.lastChecked &&
+-      Date.now() - localFileContents.lastChecked < 86400_000
+-    ) {
+-      return;
+-    }
+-
+-    const response = await this.fetch(updateURL, {
+-      headers: localFileContents?.etag
+-        ? { 'if-none-match': localFileContents?.etag }
+-        : {},
+-    });
+-
+-    if (response.status === 304 /* Not Modified, i.e. ETag matched */) {
+-      response.body
+-        ?.once('error', () => {
+-          /* ignore response content and errors */
+-        })
+-        .resume();
+-      localFileContents = { ...localFileContents, lastChecked: Date.now() };
+-      await fs.writeFile(localFilePath, JSON.stringify(localFileContents));
+-      return;
+-    }
+-
+-    if (!response.ok || !response.body) {
+-      throw new Error(
+-        `Unexpected status code fetching ${updateURL}: ${response.status} ${response.statusText}`
+-      );
+-    }
+-
+-    const jsonContents = (await response.json()) as MongoshVersionsContents;
+-    this.latestKnownMongoshVersion = jsonContents?.versions
+-      ?.map((v) => v.version)
+-      ?.filter((v) => !semver.prerelease(v))
+-      ?.sort(semver.rcompare)?.[0];
+-
+-    this.currentVersionGreetingCTA =
+-      jsonContents?.versions?.find((v) => v.version === currentVersion)?.cta ??
+-      jsonContents?.cta;
+-
+-    const latestKnownVersionCTA =
+-      jsonContents?.versions?.find(
+-        (v) => v.version === this.latestKnownMongoshVersion
+-      )?.cta ?? jsonContents?.cta;
+-
+-    localFileContents = {
+-      updateURL,
+-      lastChecked: Date.now(),
+-      etag: response.headers.get('etag') ?? undefined,
+-      latestKnownMongoshVersion: this.latestKnownMongoshVersion,
+-      cta: {
+-        [currentVersion]: this.currentVersionGreetingCTA,
+-
+-        // Add the latest known version's CTA if we're not already on latest. This could be used
+-        // next time we start mongosh if the user has updated to latest.
+-        ...(this.latestKnownMongoshVersion &&
+-          this.latestKnownMongoshVersion !== currentVersion && {
+-            [this.latestKnownMongoshVersion]: latestKnownVersionCTA,
+-          }),
+-      },
+-    };
+-    await fs.writeFile(localFilePath, JSON.stringify(localFileContents));
++  } = {}) {}
++  async getLatestVersionIfMoreRecent(_currentVersion: string): Promise<string | null> {
++    return null;
+   }
++  async getGreetingCTAForCurrentVersion(_buildInfo?: BuildInfo): Promise<
++    { text: string; style?: StyleDefinition }[] | undefined
++  > { return undefined; }
++  async fetchUpdateMetadata(_url: string, _localFile: string, _version: string): Promise<void> {}
+ }
+diff --git a/packages/i18n/src/locales/en_US.ts b/packages/i18n/src/locales/en_US.ts
+index 777ff36..0366e0c 100644
+--- a/packages/i18n/src/locales/en_US.ts
++++ b/packages/i18n/src/locales/en_US.ts
+@@ -102,11 +102,11 @@ const translations: Catalog = {
+     'cli-repl': {
+       connecting: 'Connecting to:',
+       telemetry:
+-        'To help improve our products, pseudo-anonymous usage data is collected from interactive and agentic sessions only, and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).',
+-      disableTelemetry: 'You can opt-out by running the ',
++        'No usage data is collected or sent by this build.',
++      disableTelemetry: 'Telemetry has been removed. ',
+       command: 'command.',
+-      enabledTelemetry: 'Telemetry is now enabled.',
+-      disabledTelemetry: 'Telemetry is now disabled.',
++      enabledTelemetry: 'Telemetry has been removed from this build.',
++      disabledTelemetry: 'Telemetry has been removed from this build.',
+       wiki: {
+         info: 'For mongosh info see:',
+         link: 'https://www.mongodb.com/docs/mongodb-shell/',
+@@ -220,11 +220,11 @@ const translations: Catalog = {
+             },
+             enableTelemetry: {
+               description:
+-                'Enables collection of anonymous usage data to improve the mongosh CLI',
++                'Compatibility command; telemetry has been removed from this build',
+             },
+             disableTelemetry: {
+               description:
+-                'Disables collection of anonymous usage data to improve the mongosh CLI',
++                'Compatibility command; telemetry has been removed from this build',
+             },
+             passwordPrompt: {
+               description: 'Prompts the user for a password',
+diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/analytics-helpers.ts
+index 100fdec..6adbbfa 100644
+--- a/packages/logging/src/analytics-helpers.ts
++++ b/packages/logging/src/analytics-helpers.ts
+@@ -1,301 +1,14 @@
+-import fs from 'fs';
+-import path from 'path';
+-import type { TelemetryEvent } from './telemetry-events';
+-
+-/**
+- * General interface for a telemetry provider that mongosh can use.
+- * All events are routed through the single track() method.
+- */
++// Compatibility interfaces only. No queues, targets, identifiers or persistence.
+ export interface MongoshAnalytics {
+-  track(event: TelemetryEvent): void;
++  track(event?: unknown): void;
+   flush(): Promise<void>;
+ }
+-
+-class Queue<T> {
+-  private applyFn: (val: T) => void;
+-  private queue: T[] = [];
+-  private state: 'paused' | 'enabled' | 'disabled' = 'paused';
+-  constructor(applyFn: (val: T) => void) {
+-    this.applyFn = applyFn;
+-  }
+-  push(val: T) {
+-    switch (this.state) {
+-      case 'paused':
+-        this.queue.push(val);
+-        return;
+-      case 'enabled':
+-        this.applyFn(val);
+-        return;
+-      case 'disabled':
+-      default:
+-        return;
+-    }
+-  }
+-  enable() {
+-    this.state = 'enabled';
+-    const queue = this.queue;
+-    this.queue = [];
+-    queue.forEach((val) => {
+-      this.applyFn(val);
+-    });
+-  }
+-  disable() {
+-    this.state = 'disabled';
+-    this.queue = [];
+-  }
+-  pause() {
+-    this.state = 'paused';
+-  }
+-  getState() {
+-    return this.state;
+-  }
+-}
+-
+-/**
+- * A no-op implementation of MongoshAnalytics used when telemetry is unavailable.
+- */
+ export class NoopAnalytics implements MongoshAnalytics {
+-  track(): void {
+-    // no-op
+-  }
+-  flush() {
+-    return Promise.resolve();
+-  }
+-}
+-
+-/**
+- * An implementation of MongoshAnalytics that forwards to another implementation
+- * and can be enabled/paused/disabled.
+- */
+-export class ToggleableAnalytics implements MongoshAnalytics {
+-  _queue = new Queue<TelemetryEvent>((event) => {
+-    this._target.track(event);
+-  });
+-  _target: MongoshAnalytics;
+-
+-  constructor(target: MongoshAnalytics = new NoopAnalytics()) {
+-    this._target = target;
+-  }
+-
+-  track(event: TelemetryEvent): void {
+-    this._queue.push(event);
+-  }
+-
+-  enable() {
+-    this._queue.enable();
+-  }
+-
+-  disable() {
+-    this._queue.disable();
+-  }
+-
+-  pause() {
+-    this._queue.pause();
+-  }
+-
+-  async flush(): Promise<void> {
+-    return await this._target.flush();
+-  }
+-}
+-
+-type ThrottledAnalyticsOptions = {
+-  target: MongoshAnalytics;
+-  /** Stable identifier used to key cross-session throttle state. */
+-  currentSessionId: string;
+-  /**
+-   * Throttling options. If not provided, throttling is disabled (default: null)
+-   */
+-  throttle: {
+-    /** Allowed events per timeframe number */
+-    rate: number;
+-    /** Timeframe for throttling in milliseconds (default: 60_000ms) */
+-    timeframe?: number;
+-    /** Path to persist rpm value to be able to track them between sessions */
+-    metadataPath: string;
+-    /** Duration in milliseconds in which the lock is considered stale (default: 43_200_000) */
+-    lockfileStaleDuration?: number;
+-  } | null;
+-};
+-
+-async function lockfile(
+-  filepath: string,
+-  staleDuration = 43_200_000
+-): Promise<() => Promise<void>> {
+-  let intervalId: ReturnType<typeof setInterval>;
+-  const lockfilePath = `${filepath}.lock`;
+-  const unlock = async () => {
+-    clearInterval(intervalId);
+-    try {
+-      return await fs.promises.rmdir(lockfilePath);
+-    } catch {
+-      // ignore update errors
+-    }
+-  };
+-  try {
+-    await fs.promises.mkdir(lockfilePath);
+-    // Set up an interval update for lockfile mtime so that if the lockfile is
+-    // created by long running process (longer than staleDuration) we make sure
+-    // that another process doesn't consider lockfile stale
+-    intervalId = setInterval(() => {
+-      const now = Date.now();
+-      fs.promises.utimes(lockfilePath, now, now).catch(() => {
+-        // ignore errors refreshing the lockfile mtime
+-      });
+-    }, staleDuration / 2);
+-    intervalId.unref?.();
+-    return unlock;
+-  } catch (e) {
+-    if ((e as NodeJS.ErrnoException).code !== 'EEXIST') {
+-      throw e;
+-    }
+-    const stats = await fs.promises.stat(lockfilePath);
+-    // To make sure that the lockfile is not just a leftover from an unclean
+-    // process exit, we check whether or not it is stale
+-    if (Date.now() - stats.mtimeMs > staleDuration) {
+-      await fs.promises.rmdir(lockfilePath);
+-      return lockfile(filepath, staleDuration);
+-    }
+-    throw new Error(`File ${filepath} already locked`);
+-  }
++  track(_event?: unknown): void {}
++  async flush(): Promise<void> {}
+ }
+-
+-export class ThrottledAnalytics implements MongoshAnalytics {
+-  private trackQueue = new Queue<TelemetryEvent>((event) => {
+-    if (this.shouldEmitAnalyticsEvent()) {
+-      this.target.track(event);
+-      this.throttleState.count++;
+-    }
+-  });
+-  private target: MongoshAnalytics;
+-  private currentSessionId: string | null = null;
+-  private throttleOptions: ThrottledAnalyticsOptions['throttle'] = null;
+-  private throttleState = { count: 0, timestamp: Date.now() };
+-  private restorePromise: Promise<void> = Promise.resolve();
+-  private unlock: () => Promise<void> = () => Promise.resolve();
+-
+-  constructor({
+-    target,
+-    currentSessionId,
+-    throttle,
+-  }: Partial<ThrottledAnalyticsOptions> = {}) {
+-    this.target = target ?? new NoopAnalytics();
+-    this.throttleOptions = throttle ?? this.throttleOptions;
+-    if (currentSessionId) {
+-      // Start restore immediately so the lockfile is acquired before the first
+-      // track() call, rather than being deferred until the first event arrives.
+-      this.beginRestore(currentSessionId);
+-    }
+-  }
+-
+-  private beginRestore(sessionId: string): void {
+-    this.currentSessionId = sessionId;
+-    this.restorePromise = this.restoreThrottleState().then((enabled) => {
+-      if (!enabled) {
+-        this.trackQueue.disable();
+-        return;
+-      }
+-      this.trackQueue.enable();
+-    });
+-  }
+-
+-  get metadataPath() {
+-    if (!this.throttleOptions) {
+-      throw new Error(
+-        'Metadata path is not available if throttling is disabled'
+-      );
+-    }
+-    if (!this.currentSessionId) {
+-      throw new Error('Metadata path is not available if sessionId is not set');
+-    }
+-    return path.resolve(
+-      this.throttleOptions.metadataPath,
+-      `am-${this.currentSessionId}.json`
+-    );
+-  }
+-
+-  track(event: TelemetryEvent): void {
+-    if (!this.currentSessionId) {
+-      this.beginRestore(event.payload.session_id);
+-    }
+-    this.trackQueue.push(event);
+-  }
+-
+-  // Tries to restore persisted throttle state and returns `true` if telemetry can
+-  // be enabled on restore. This method must not throw exceptions, since there
+-  // is nothing to handle them. If the error is unexpected, this method should
+-  // return `false` to disable telemetry
+-  private async restoreThrottleState(): Promise<boolean> {
+-    if (!this.throttleOptions) {
+-      return true;
+-    }
+-    if (!this.currentSessionId) {
+-      throw new Error(
+-        'Trying to restore throttle state before sessionId is set'
+-      );
+-    }
+-    try {
+-      this.unlock = await lockfile(
+-        this.metadataPath,
+-        this.throttleOptions.lockfileStaleDuration
+-      );
+-    } catch (e) {
+-      // Error while locking means that lock already exists or something
+-      // unexpected happens, in either case we disable telemetry
+-      return false;
+-    }
+-    try {
+-      this.throttleState = JSON.parse(
+-        await fs.promises.readFile(this.metadataPath, 'utf8')
+-      );
+-    } catch (e) {
+-      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+-        // Any error except ENOENT means that we failed to restore state for
+-        // some unknown / unexpected reason, ignore the error and assume that it
+-        // is not safe to enable telemetry in that case
+-        return false;
+-      }
+-    }
+-    return true;
+-  }
+-
+-  private shouldEmitAnalyticsEvent() {
+-    // No throttle options indicate that throttling is disabled
+-    if (!this.throttleOptions) {
+-      return true;
+-    }
+-    // If throttle window passed, reset throttle state and allow to emit event
+-    if (
+-      Date.now() - this.throttleState.timestamp >
+-      (this.throttleOptions.timeframe ?? 60_000)
+-    ) {
+-      this.throttleState.timestamp = Date.now();
+-      this.throttleState.count = 0;
+-      return true;
+-    }
+-    // Otherwise only allow if the count below the allowed rate
+-    return this.throttleState.count < this.throttleOptions.rate;
+-  }
+-
+-  async flush(): Promise<void> {
+-    if (!this.throttleOptions) {
+-      await this.target.flush();
+-      return;
+-    }
+-    if (!this.currentSessionId) {
+-      throw new Error(
+-        'Trying to persist throttle state before sessionId is set'
+-      );
+-    }
+-    try {
+-      await this.restorePromise;
+-    } catch {
+-      // Ignored.
+-    }
+-    await fs.promises.writeFile(
+-      this.metadataPath,
+-      JSON.stringify(this.throttleState)
+-    );
+-    await this.unlock();
+-    await this.target.flush();
+-  }
++export class ToggleableAnalytics extends NoopAnalytics {
++  enable(): void {}
++  disable(): void {}
++  pause(): void {}
+ }
+diff --git a/packages/logging/src/helpers.ts b/packages/logging/src/helpers.ts
+index 5ae2a70..03fe8dd 100644
+--- a/packages/logging/src/helpers.ts
++++ b/packages/logging/src/helpers.ts
+@@ -1,38 +1,3 @@
+-export const KNOWN_AGENT_ENV_VARS: Record<string, string> = {
+-  CLAUDECODE: 'claude_code',
+-  CLAUDE_CODE_ENTRYPOINT: 'claude_code',
+-  CURSOR_AGENT: 'cursor',
+-  CODEX_SANDBOX: 'codex_cli',
+-  CLINE_ACTIVE: 'cline',
+-  GEMINI_CLI: 'gemini_cli',
+-  AUGMENT_AGENT: 'auggie_cli',
+-  OPENCODE_CLIENT: 'opencode_client',
+-  TRAE_AI_SHELL_ID: 'trae_ai',
+-  GOOSE_TERMINAL: 'goose',
+-  GOOSE_AGENT: 'goose',
+-  AI_AGENT: 'ai_agent', // Generic fallback.
+-};
+-
+-export function getAiAgent(
+-  env: NodeJS.ProcessEnv = process.env
+-): string | undefined {
+-  for (const [key, agent] of Object.entries(KNOWN_AGENT_ENV_VARS)) {
+-    const value = env[key];
+-    if (!value) continue;
+-
+-    // If the value is a descriptive name it is used directly,
+-    // otherwise 'ai_agent' is returned.
+-    if (key === 'AI_AGENT') {
+-      const v = value.toLowerCase();
+-      return v === '1' || v === 'true' ? 'ai_agent' : v;
+-    }
+-
+-    return agent;
+-  }
+-
+-  return undefined;
+-}
+-
+ /**
+  * A helper class for keeping track of how often specific events occurred.
+  */
+diff --git a/packages/logging/src/index.ts b/packages/logging/src/index.ts
+index 3695f5a..4f43349 100644
+--- a/packages/logging/src/index.ts
++++ b/packages/logging/src/index.ts
+@@ -1,11 +1,3 @@
+-export {
+-  MongoshAnalytics,
+-  ToggleableAnalytics,
+-  NoopAnalytics,
+-  ThrottledAnalytics,
+-} from './analytics-helpers';
+-export { TelemetryClient, REQUEST_TIMEOUT_MS } from './telemetry-client';
++export { MongoshAnalytics, ToggleableAnalytics, NoopAnalytics } from './analytics-helpers';
+ export { MongoshLoggingAndTelemetry } from './types';
+ export { setupLoggingAndTelemetry } from './logging-and-telemetry';
+-export { getAiAgent, KNOWN_AGENT_ENV_VARS } from './helpers';
+-export type { TelemetryEvent } from './telemetry-events';
+diff --git a/packages/logging/src/logging-and-telemetry.ts b/packages/logging/src/logging-and-telemetry.ts
+index 05d24d8..ea5975a 100644
+--- a/packages/logging/src/logging-and-telemetry.ts
++++ b/packages/logging/src/logging-and-telemetry.ts
+@@ -6,13 +6,11 @@ import {
+ import type {
+   MongoshBus,
+   ApiEventWithArguments,
+-  ApiEvent,
+   UseEvent,
+   EvaluateInputEvent,
+   ShowEvent,
+   ConnectEvent,
+   ScriptLoadFileEvent,
+-  StartLoadingCliScriptsEvent,
+   StartMongoshReplEvent,
+   GlobalConfigFileLoadEvent,
+   CryptLibrarySkipEvent,
+@@ -33,28 +31,18 @@ import type {
+   EditorReadVscodeExtensionsFailedEvent,
+   FetchingUpdateMetadataEvent,
+   FetchingUpdateMetadataCompleteEvent,
+-  SessionStartedEvent,
+   MongoshBusEventsMap,
+   WriteCustomLogEvent,
+ } from '@mongosh/types';
+ import { inspect } from 'util';
+ import { MongoLogWriter } from 'mongodb-log-writer';
+ import { mongoLogId } from 'mongodb-log-writer';
+-import type { MongoshAnalytics } from './analytics-helpers';
+-import type { TelemetryEvent } from './telemetry-events';
+-type TrackableEvent = {
+-  name: string;
+-  payload?: Record<string, unknown> | (() => Record<string, unknown>);
+-};
+ import type { ConnectEventMap } from '@mongodb-js/devtools-connect';
+ import { hookLogger } from '@mongodb-js/devtools-connect';
+-import { MultiSet, toSnakeCase, getAiAgent } from './helpers';
+ import { Writable } from 'stream';
+ import type {
+-  LoggingAndTelemetryBusEventState,
+   MongoshLoggingAndTelemetry,
+   MongoshLoggingAndTelemetryArguments,
+-  SessionTelemetryState,
+ } from './types';
+ 
+ export function setupLoggingAndTelemetry(
+@@ -79,114 +67,33 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+   );
+ 
+   private readonly bus: MongoshBus;
+-  private readonly analytics: MongoshAnalytics;
+-  private readonly userTraits: {
+-    platform: string;
+-    [key: string]: unknown;
+-  };
+-  private readonly mongoshVersion: string;
+-  private readonly telemetryEndpoint: string;
+ 
+   private log: MongoLogWriter;
+   private pendingBusEvents: CallableFunction[] = [];
+-  private pendingTelemetryEvents: CallableFunction[] = [];
+   private isSetup = false;
+   private isBufferingBusEvents = false;
+-  private isBufferingTelemetryEvents = false;
+-  private trackFn: ((event: TrackableEvent) => void) | undefined;
+ 
+-  private deviceId: string | Promise<string>;
+-
+-  /** @internal Used for awaiting the telemetry setup in tests. */
+-  public setupTelemetryPromise: Promise<void> = Promise.resolve();
+-
+-  private readonly telemetrySetupAbort: AbortController = new AbortController();
+-
+-  constructor({
+-    bus,
+-    analytics,
+-    userTraits,
+-    mongoshVersion,
+-    deviceId,
+-    telemetryEndpoint,
+-  }: MongoshLoggingAndTelemetryArguments) {
++  constructor({ bus }: MongoshLoggingAndTelemetryArguments) {
+     this.bus = bus;
+-    this.analytics = analytics;
+     this.log = LoggingAndTelemetry.dummyLogger;
+-    this.userTraits = userTraits;
+-    this.mongoshVersion = mongoshVersion;
+-    this.deviceId = deviceId;
+-    this.telemetryEndpoint = telemetryEndpoint ?? '';
+   }
+ 
+   public setup(): void {
+     if (this.isSetup) {
+       throw new Error('Setup can only be called once.');
+     }
+-    this.isBufferingTelemetryEvents = true;
+     this.isBufferingBusEvents = true;
+ 
+-    this.setupTelemetryPromise = this.setupTelemetry();
+     this.setupBusEventListeners();
+ 
+     this.isSetup = true;
+   }
+ 
+   public async flush(): Promise<void> {
+-    const session: SessionTelemetryState = this.busEventState.session;
+-    if (this.trackFn) {
+-      // Emit the "Session Ended" event once per session. Whether the session is
+-      // one we collect telemetry for at all is decided by the analytics
+-      // instance passed in, see CliRepl#isTelemetryEnabled().
+-      this.trackFn({
+-        name: 'Session Ended',
+-        payload: {
+-          is_interactive: session.isInteractive,
+-          commands_repl:
+-            Object.keys(session.commandsRepl).length > 0
+-              ? session.commandsRepl
+-              : undefined,
+-          commands_rc:
+-            Object.keys(session.commandsRc).length > 0
+-              ? session.commandsRc
+-              : undefined,
+-          sequence: session.sequence,
+-          sequence_truncated: session.sequenceTruncated,
+-          error_count: session.errorCount,
+-          ...session.timings,
+-          mongoshrc_loaded: session.mongoshrcLoaded,
+-          mongorc_warning: session.mongorcWarning,
+-          snippet_loaded_count: session.snippetLoadedCount,
+-          shell_flag: session.shellFlag,
+-          cli_eval_count: session.cliEvalCount,
+-          cli_file_count: session.cliFileCount,
+-          evaluation_count: session.evaluationCount,
+-        },
+-      });
+-    }
+-
+-    // Run any other pending events with the set or dummy log for telemetry purposes.
+     this.runAndClearPendingBusEvents();
+-
+-    // Abort setup, which will cause the device ID to be set to 'unknown'
+-    // and run any remaining telemetry events
+-    this.telemetrySetupAbort.abort();
+-
+     await this.log.flush();
+   }
+ 
+-  private async setupTelemetry(): Promise<void> {
+-    this.deviceId = await this.deviceId;
+-
+-    // Emit the "Identify" event once per session.
+-    this.trackFn?.({
+-      name: 'Identify',
+-      payload: () => ({ ...this.userTraits }),
+-    });
+-
+-    this.runAndClearPendingTelemetryEvents();
+-  }
+-
+   public attachLogger(logger: MongoLogWriter): void {
+     if (!this.isSetup) {
+       throw new Error('Run setup() before setting up the log writer.');
+@@ -218,47 +125,7 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+     this.isBufferingBusEvents = false;
+   }
+ 
+-  private runAndClearPendingTelemetryEvents() {
+-    let pendingEvent: CallableFunction | undefined;
+-    while ((pendingEvent = this.pendingTelemetryEvents.shift())) {
+-      pendingEvent();
+-    }
+-    this.isBufferingTelemetryEvents = false;
+-  }
+-
+-  /** Information used and set by different bus events. */
+-  private busEventState: LoggingAndTelemetryBusEventState = {
+-    /** We emit different analytics events for loading files and evaluating scripts
+-     * depending on whether we're already in the REPL or not yet. We store the
+-     * state here so that the places where the events are emitted don't have to
+-     * be aware of this distinction. */
+-    hasStartedMongoshRepl: false,
+-    apiCallTracking: {
+-      isEnabled: false,
+-      apiCalls: new MultiSet<Pick<ApiEvent, 'class' | 'method'>>(),
+-      deprecatedApiCalls: new MultiSet<Pick<ApiEvent, 'class' | 'method'>>(),
+-    },
+-    usesShellOption: false,
+-    session: {
+-      isInteractive: false,
+-      timings: {},
+-      errorCount: 0,
+-      mongoshrcLoaded: false,
+-      mongorcWarning: false,
+-      snippetLoadedCount: 0,
+-      shellFlag: false,
+-      cliEvalCount: 0,
+-      cliFileCount: 0,
+-      evaluationCount: 0,
+-      commandsRepl: {},
+-      commandsRc: {},
+-      sequence: [],
+-      sequenceTruncated: false,
+-    },
+-  };
+-
+   private setupBusEventListeners(): void {
+-    const MAX_SEQUENCE_LENGTH = 100;
+     const onBus = <
+       EventsMap extends Record<
+         keyof MongoshBusEventsMap | keyof ConnectEventMap,
+@@ -282,51 +149,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+       return this.bus;
+     };
+ 
+-    const getTrackingProperties = () => ({
+-      mongosh_version: this.mongoshVersion,
+-      ai_agent: getAiAgent(),
+-      session_id: this.log.logId,
+-    });
+-
+-    const track = (event: TrackableEvent): void => {
+-      const callback = () => {
+-        const rawPayload =
+-          typeof event.payload === 'function' ? event.payload() : event.payload;
+-        const telemetryEvent = {
+-          name: event.name,
+-          payload: {
+-            ...getTrackingProperties(),
+-            ...rawPayload,
+-          },
+-        } as unknown as TelemetryEvent;
+-        this.log.info(
+-          'MONGOSH',
+-          mongoLogId(1_000_000_016),
+-          'analytics',
+-          'Sending telemetry event',
+-          // When no telemetry endpoint is configured, events are not sent
+-          // anywhere, so log the full payload locally to aid debugging.
+-          // With a real endpoint, log only the event name.
+-          this.telemetryEndpoint
+-            ? { name: telemetryEvent.name }
+-            : { name: telemetryEvent.name, payload: telemetryEvent.payload }
+-        );
+-        this.analytics.track(telemetryEvent);
+-      };
+-
+-      // Bus events (and thus the real log writer via attachLogger()) may not
+-      // be ready yet; queuing here too ensures the Identify event emitted
+-      // eagerly from setupTelemetry() below isn't logged against the
+-      // dummyLogger and silently dropped from the log file.
+-      if (this.isBufferingBusEvents) {
+-        this.pendingBusEvents.push(callback);
+-      } else if (this.isBufferingTelemetryEvents) {
+-        this.pendingTelemetryEvents.push(callback);
+-      } else {
+-        callback();
+-      }
+-    };
+-
+     onBus('mongosh:start-mongosh-repl', (ev: StartMongoshReplEvent) => {
+       this.log.info(
+         'MONGOSH',
+@@ -335,19 +157,17 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         'Started REPL',
+         ev
+       );
+-      this.busEventState.hasStartedMongoshRepl = true;
+     });
+ 
+     onBus(
+       'mongosh:start-loading-cli-scripts',
+-      (event: StartLoadingCliScriptsEvent) => {
++      () => {
+         this.log.info(
+           'MONGOSH',
+           mongoLogId(1_000_000_003),
+           'repl',
+           'Start loading CLI scripts'
+         );
+-        this.busEventState.usesShellOption = event.usesShellOption;
+       }
+     );
+ 
+@@ -373,20 +193,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         }
+       );
+ 
+-      // Emit the "New Connection" event once per connection.
+-      track({
+-        name: 'New Connection',
+-        payload: properties,
+-      });
+-    });
+-
+-    onBus('mongosh:start-session', (args: SessionStartedEvent) => {
+-      const session = this.busEventState.session;
+-      session.isInteractive = args.isInteractive;
+-      session.shellFlag = this.busEventState.usesShellOption;
+-      for (const [key, duration] of Object.entries(args.timings)) {
+-        session.timings[toSnakeCase(key) + '_ms'] = duration;
+-      }
+     });
+ 
+     onBus('mongosh:error', (error: Error, context: string) => {
+@@ -406,9 +212,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         error
+       );
+ 
+-      if (error.name.includes('Mongosh')) {
+-        this.busEventState.session.errorCount++;
+-      }
+     });
+ 
+     onBus('mongosh:write-custom-log', (event: WriteCustomLogEvent) => {
+@@ -461,17 +264,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         'Used "use" command',
+         args
+       );
+-      const { session, hasStartedMongoshRepl } = this.busEventState;
+-      const commands = hasStartedMongoshRepl
+-        ? session.commandsRepl
+-        : session.commandsRc;
+-      const key = 'ShellApi.use';
+-      commands[key] = ((commands[key] as number | undefined) ?? 0) + 1;
+-      if (session.sequence.length < MAX_SEQUENCE_LENGTH) {
+-        session.sequence.push(key);
+-      } else {
+-        session.sequenceTruncated = true;
+-      }
+     });
+ 
+     onBus('mongosh:show', (args: ShowEvent) => {
+@@ -521,9 +313,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         args
+       );
+ 
+-      if (!this.busEventState.hasStartedMongoshRepl) {
+-        this.busEventState.session.cliFileCount++;
+-      }
+     });
+ 
+     onBus('mongosh:eval-cli-script', () => {
+@@ -534,7 +323,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         'Evaluating script passed on the command line'
+       );
+ 
+-      this.busEventState.session.cliEvalCount++;
+     });
+ 
+     onBus('mongosh:mongoshrc-load', () => {
+@@ -545,7 +333,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         'Loading .mongoshrc.js'
+       );
+ 
+-      this.busEventState.session.mongoshrcLoaded = true;
+     });
+ 
+     onBus('mongosh:mongoshrc-mongorc-warn', () => {
+@@ -556,7 +343,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         'Warning about .mongorc.js/.mongoshrc.js mismatch'
+       );
+ 
+-      this.busEventState.session.mongorcWarning = true;
+     });
+ 
+     onBus('mongosh:crypt-library-load-skip', (ev: CryptLibrarySkipEvent) => {
+@@ -719,9 +505,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+         ev
+       );
+ 
+-      if (ev.args[0] === 'install') {
+-        this.busEventState.session.snippetLoadedCount++;
+-      }
+     });
+ 
+     onBus(
+@@ -737,60 +520,6 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+       }
+     );
+ 
+-    onBus('mongosh:api-call', (ev: ApiEvent) => {
+-      // Only track if we have previously seen a mongosh:evaluate-started call
+-      if (!this.busEventState.apiCallTracking.isEnabled) return;
+-      const { apiCalls, deprecatedApiCalls } =
+-        this.busEventState.apiCallTracking;
+-      if (ev.deprecated) {
+-        deprecatedApiCalls.add({ class: ev.class, method: ev.method });
+-      }
+-      if (ev.callDepth === 0 && ev.isAsync) {
+-        apiCalls.add({ class: ev.class, method: ev.method });
+-      }
+-    });
+-    onBus('mongosh:evaluate-started', () => {
+-      const { apiCalls, deprecatedApiCalls } =
+-        this.busEventState.apiCallTracking;
+-      this.busEventState.apiCallTracking.isEnabled = true;
+-      // Clear API calls before evaluation starts. This is important because
+-      // some API calls are also emitted by mongosh CLI repl internals,
+-      // but we only care about those emitted from user code (i.e. during
+-      // evaluation).
+-      deprecatedApiCalls.clear();
+-      apiCalls.clear();
+-    });
+-    onBus('mongosh:evaluate-finished', () => {
+-      const { apiCalls, deprecatedApiCalls } =
+-        this.busEventState.apiCallTracking;
+-      for (const [entry] of deprecatedApiCalls) {
+-        this.log.warn(
+-          'MONGOSH',
+-          mongoLogId(1_000_000_033),
+-          'shell-api',
+-          'Deprecated API call',
+-          entry
+-        );
+-      }
+-      const { session, hasStartedMongoshRepl } = this.busEventState;
+-      const commands = hasStartedMongoshRepl
+-        ? session.commandsRepl
+-        : session.commandsRc;
+-      for (const [entry, count] of apiCalls) {
+-        const key = `${entry.class}.${entry.method}`;
+-        commands[key] = ((commands[key] as number | undefined) ?? 0) + count;
+-        if (session.sequence.length < MAX_SEQUENCE_LENGTH) {
+-          session.sequence.push(key);
+-        } else {
+-          session.sequenceTruncated = true;
+-        }
+-      }
+-      session.evaluationCount++;
+-      deprecatedApiCalls.clear();
+-      apiCalls.clear();
+-      this.busEventState.apiCallTracking.isEnabled = false;
+-    });
+-
+     // Log ids 1_000_000_034 through 1_000_000_042 are reserved for the
+     // devtools-connect package which was split out from mongosh.
+     // 'mongodb' is not supported in startup snapshots yet.
+@@ -899,6 +628,5 @@ export class LoggingAndTelemetry implements MongoshLoggingAndTelemetry {
+       (uri) => redactConnectionString(uri)
+     );
+ 
+-    this.trackFn = track;
+   }
+ }
+diff --git a/packages/logging/src/telemetry-client.ts b/packages/logging/src/telemetry-client.ts
+deleted file mode 100644
+index 90869a3..0000000
+--- a/packages/logging/src/telemetry-client.ts
++++ /dev/null
+@@ -1,100 +0,0 @@
+-import { gzip } from 'zlib';
+-import { promisify } from 'util';
+-import timers from 'timers';
+-import type { TelemetryEvent } from './telemetry-events';
+-import type { MongoshAnalytics } from './analytics-helpers';
+-
+-const gzipAsync = promisify(gzip);
+-
+-// Generous enough number for a fire-and-forget event. Adjust freely if needed.
+-export const REQUEST_TIMEOUT_MS = 1_000;
+-export const FLUSH_TIMEOUT_MS = 500;
+-const SCHEMA_VERSION = 'v1';
+-
+-function noop(): void {
+-  // ignore
+-}
+-
+-type FetchFn = (
+-  url: string,
+-  init?: {
+-    method?: string;
+-    headers?: { Cookie: string };
+-    signal?: AbortSignal;
+-  }
+-) => Promise<unknown>;
+-
+-function eventPath(name: TelemetryEvent['name']): string {
+-  return `/${SCHEMA_VERSION}/${name.toLowerCase().replace(/\s+/g, '-')}`;
+-}
+-
+-export class TelemetryClient implements MongoshAnalytics {
+-  private readonly endpoint: string;
+-  private readonly fetch: FetchFn;
+-  private readonly requestTimeoutMs: number;
+-  private readonly flushTimeoutMs: number;
+-  private readonly controller = new AbortController();
+-  private pending = new Set<Promise<unknown>>();
+-
+-  constructor(
+-    endpoint: string,
+-    fetch: FetchFn = globalThis.fetch.bind(globalThis),
+-    flushTimeoutMs: number = FLUSH_TIMEOUT_MS,
+-    requestTimeoutMs: number = REQUEST_TIMEOUT_MS
+-  ) {
+-    this.endpoint = endpoint;
+-    this.fetch = fetch;
+-    this.flushTimeoutMs = flushTimeoutMs;
+-    this.requestTimeoutMs = requestTimeoutMs;
+-  }
+-
+-  /**
+-   * Sends events to the MongoDB telemetry endpoint. The format:
+-   *  - path (cs-uri-stem):          schema version + event name, e.g. /v1/new-connection
+-   *  - query string (cs-uri-query): session_id for filtering & joins in raw logs;
+-   *  - User-Agent (cs(User-Agent)): client identity (mongosh version, OS, arch),
+-   *                                 attached by the `fetch` passed into the
+-   *                                 constructor, not by this class
+-   *  - Cookie (cs(Cookie)):         full event payload, gzip-compressed + base64-encoded
+-   *
+-   * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logging.html
+-   */
+-  public track(event: TelemetryEvent): void {
+-    const trackPromise = this.doTrack(event)
+-      .then(noop, noop)
+-      .finally(() => this.pending.delete(trackPromise));
+-    this.pending.add(trackPromise);
+-  }
+-
+-  private async doTrack(event: TelemetryEvent): Promise<void> {
+-    const payload: Record<string, unknown> = event.payload;
+-    const query = new URLSearchParams({
+-      sessionId: String(payload.session_id ?? ''),
+-    });
+-    const url = `${this.endpoint}${eventPath(event.name)}?${query.toString()}`;
+-    const compressed = await gzipAsync(Buffer.from(JSON.stringify(event)));
+-    try {
+-      const signal = AbortSignal.any([
+-        AbortSignal.timeout(this.requestTimeoutMs),
+-        this.controller.signal,
+-      ]);
+-      await this.fetch(url, {
+-        method: 'HEAD',
+-        headers: { Cookie: `mge=${compressed.toString('base64')}` },
+-        signal,
+-      });
+-    } catch {
+-      // ignore
+-    }
+-  }
+-
+-  async flush(): Promise<void> {
+-    if (this.pending.size !== 0) {
+-      const maxFlushTimeout = timers.promises.setTimeout(this.flushTimeoutMs, {
+-        unref: true,
+-      });
+-      await Promise.race([Promise.allSettled(this.pending), maxFlushTimeout]);
+-    }
+-    this.controller.abort('TelemetryClient flush');
+-  }
+-}
+diff --git a/packages/logging/src/telemetry-events.ts b/packages/logging/src/telemetry-events.ts
+deleted file mode 100644
+index 670821b..0000000
+--- a/packages/logging/src/telemetry-events.ts
++++ /dev/null
+@@ -1,190 +0,0 @@
+-/**
+- * Emitted once per session at startup to associate device and OS traits with the session.
+- *
+- * @category Session
+- */
+-export interface IdentifyEvent {
+-  name: 'Identify';
+-  payload: {
+-    /** The version of mongosh that emitted the event. */
+-    mongosh_version: string;
+-    /** AI agent identifier if the session was initiated by an AI agent. */
+-    ai_agent: string | undefined;
+-    /** Unique identifier for the current mongosh session. */
+-    session_id: string;
+-    /** The OS platform (e.g. `"darwin"`, `"linux"`, `"win32"`). */
+-    platform: string;
+-    /** The CPU architecture (e.g. `"x64"`, `"arm64"`). */
+-    arch: string;
+-    /** Whether mongosh is running inside a container. */
+-    is_containerized: boolean;
+-    /** The OS type (e.g. `"Darwin"`, `"Linux"`). */
+-    os_type: string | undefined;
+-    /** The OS version string. */
+-    os_version: string | undefined;
+-    /** The OS architecture. */
+-    os_arch: string | undefined;
+-    /** The OS release identifier. */
+-    os_release: string | undefined;
+-    /** Linux-only: distribution ID from /etc/os-release (e.g. `"ubuntu"`). */
+-    os_linux_dist: string | undefined;
+-    /** Linux-only: version ID from /etc/os-release (e.g. `"22.04"`). */
+-    os_linux_release: string | undefined;
+-    /** macOS-only: product name from SystemVersion.plist (e.g. `"macOS"`). */
+-    os_darwin_product_name: string | undefined;
+-    /** macOS-only: product version from SystemVersion.plist (e.g. `"14.1.0"`). */
+-    os_darwin_product_version: string | undefined;
+-    /** macOS-only: product build version from SystemVersion.plist (e.g. `"23B74"`). */
+-    os_darwin_product_build_version: string | undefined;
+-  };
+-}
+-
+-/**
+- * Emitted when mongosh establishes a new connection to a MongoDB server.
+- *
+- * Fired on bus event: `mongosh:connect`
+- *
+- * @category Session
+- */
+-export interface NewConnectionEvent {
+-  name: 'New Connection';
+-  payload: {
+-    /** The version of mongosh that emitted the event. */
+-    mongosh_version: string;
+-    /** AI agent identifier if the session was initiated by an AI agent. */
+-    ai_agent: string | undefined;
+-    /** Unique identifier for the current mongosh session. */
+-    session_id: string;
+-    /** Whether the server is an Atlas deployment. */
+-    is_atlas: boolean;
+-    /** Whether the connection URI is an Atlas URL. */
+-    is_atlas_url: boolean | undefined;
+-    /** Whether the server is a local Atlas deployment. */
+-    is_local_atlas: boolean;
+-    /** Whether connecting to localhost. */
+-    is_localhost: boolean | undefined;
+-    /** Whether the URI is a DigitalOcean URL. */
+-    is_do_url: boolean | undefined;
+-    /** Whether the server is MongoDB Enterprise. */
+-    is_enterprise: boolean | undefined;
+-    /** Whether the server is a genuine MongoDB instance. */
+-    is_genuine: boolean;
+-    /** Whether the server is Atlas Data Federation. */
+-    is_data_federation: boolean | undefined;
+-    /** Whether the server is Atlas Stream Processing. */
+-    is_stream: boolean | undefined;
+-    /**
+-     * The resolved Atlas hostname when is_atlas is true, otherwise null.
+-     * Derived from the resolved_hostname field of the connect event.
+-     */
+-    atlas_hostname: string | null;
+-    /** The MongoDB server version string. */
+-    server_version: string;
+-    /** The OS on which the server is running. */
+-    server_os: string | undefined;
+-    /** The CPU architecture of the server. */
+-    server_arch: string | undefined;
+-    /** The server name when is_genuine is false. */
+-    non_genuine_server_name: string;
+-    /** The authentication mechanism used (e.g. `"DEFAULT"`, `"SCRAM-SHA-256"`). */
+-    auth_type: string | undefined;
+-    /** The MongoDB Versioned API version string. */
+-    api_version: string | undefined;
+-    /** Whether the MongoDB Versioned API strict mode is enabled. */
+-    api_strict: boolean | undefined;
+-    /** Whether the MongoDB Versioned API deprecation errors are enabled. */
+-    api_deprecation_errors: boolean | undefined;
+-    /** The CSFLE/QE shared library version. */
+-    dl_version: string | undefined;
+-    /** The Atlas version string. */
+-    atlas_version: string | undefined;
+-    /** The Node.js version used by mongosh. */
+-    node_version: string | undefined;
+-    /** Whether the connection URI uses the SRV format (`mongodb+srv://`). */
+-    is_srv: boolean | undefined;
+-    /** The topology type reported by the driver (e.g. `"Single"`, `"ReplicaSetWithPrimary"`). */
+-    topology_type: string | undefined;
+-    /** Whether Client-Side Field Level Encryption (CSFLE/QE) is configured. */
+-    is_csfle: boolean | undefined;
+-    /** Whether a CSFLE schema map or encrypted fields map is provided. */
+-    has_csfle_schema: boolean | undefined;
+-    /** Unique identifier for the Mongo connection instance. */
+-    connection_id: string | undefined;
+-  };
+-}
+-
+-/**
+- * Emitted at the end of each session when closing the REPL and before flushing telemetry.
+- * Only emitted when is_interactive === true OR ai_agent !== undefined.
+- *
+- * @category Session
+- */
+-export interface SessionEndedEvent {
+-  name: 'Session Ended';
+-  payload: {
+-    /** The version of mongosh that emitted the event. */
+-    mongosh_version: string;
+-    /** AI agent identifier if the session was initiated by an AI agent. */
+-    ai_agent: string | undefined;
+-    /** Unique identifier for the current mongosh session. */
+-    session_id: string;
+-    /** Whether mongosh was started in interactive (REPL) mode. */
+-    is_interactive: boolean;
+-    /** Map of command keys with counts from REPL evaluations. */
+-    commands_repl: Record<string, number> | undefined;
+-    /** Map of command keys with counts from ~/.mongoshrc.js. */
+-    commands_rc: Record<string, number> | undefined;
+-    /** Insertion-ordered list of command keys as they were invoked, capped at 100 entries. */
+-    sequence: string[];
+-    /** True if the sequence was longer than the max and was truncated. */
+-    sequence_truncated: boolean;
+-    /** Count of all errors thrown during the session. */
+-    error_count: number;
+-    /** Duration in milliseconds spent on REPL setup. */
+-    repl_instantiation_ms: number | undefined;
+-    /** Duration in milliseconds spent reading user config files. */
+-    user_config_loading_ms: number | undefined;
+-    /** Duration in milliseconds spent connecting to MongoDB. */
+-    driver_setup_ms: number | undefined;
+-    /** Duration in milliseconds spent on log file setup. */
+-    logging_ms: number | undefined;
+-    /** Duration in milliseconds spent loading snippets. */
+-    snippet_loading_ms: number | undefined;
+-    /** Duration in milliseconds spent on V8 snapshot restore. */
+-    snapshot_ms: number | undefined;
+-    /** Duration in milliseconds spent loading resource files (e.g. .mongoshrc.js). */
+-    resource_file_loading_ms: number | undefined;
+-    /** Duration in milliseconds spent on async rewriting of user input. */
+-    async_rewrite_ms: number | undefined;
+-    /** Duration in milliseconds spent evaluating expressions. */
+-    eval_ms: number | undefined;
+-    /** Duration in milliseconds spent evaluating script files. */
+-    eval_file_ms: number | undefined;
+-    /** Duration in milliseconds spent on telemetry setup. */
+-    telemetry_ms: number | undefined;
+-    /** Duration in milliseconds not attributed to any other category. */
+-    main_ms: number | undefined;
+-    /** True when ~/.mongoshrc.js is found and loaded. */
+-    mongoshrc_loaded: boolean;
+-    /** True when ~/.mongorc.js exists but ~/.mongoshrc.js does not. */
+-    mongorc_warning: boolean;
+-    /** Number of snippets installed via the snippet install command. */
+-    snippet_loaded_count: number;
+-    /** Whether the --shell flag was set. */
+-    shell_flag: boolean;
+-    /** Number of --eval scripts executed. */
+-    cli_eval_count: number;
+-    /** Number of --file scripts loaded. */
+-    cli_file_count: number;
+-    /** Number of top-level evaluations. */
+-    evaluation_count: number | undefined;
+-  };
+-}
+-
+-/**
+- * Union of all analytics events tracked by mongosh.
+- */
+-export type TelemetryEvent =
+-  | IdentifyEvent
+-  | NewConnectionEvent
+-  | SessionEndedEvent;
+diff --git a/packages/logging/src/types.ts b/packages/logging/src/types.ts
+index 0f96a74..7b1f135 100644
+--- a/packages/logging/src/types.ts
++++ b/packages/logging/src/types.ts
+@@ -1,55 +1,10 @@
+-import type { ApiEvent, MongoshBus } from '@mongosh/types';
++import type { MongoshBus } from '@mongosh/types';
+ import type { MongoLogWriter } from 'mongodb-log-writer';
+-import type { MongoshAnalytics } from './analytics-helpers';
+-import type { MultiSet } from './helpers';
+ 
++// Historical interface name retained for callers; this is local logging only.
+ export interface MongoshLoggingAndTelemetry {
+   attachLogger(logger: MongoLogWriter): void;
+   detachLogger(): Promise<void>;
+-  /** Flush any remaining log or telemetry events. */
+   flush(): Promise<void>;
+ }
+-
+-export type MongoshLoggingAndTelemetryArguments = {
+-  bus: MongoshBus;
+-  analytics: MongoshAnalytics;
+-  userTraits: { platform: string } & {
+-    [key: string]: unknown;
+-  };
+-  mongoshVersion: string;
+-  /** Machine-specific ID */
+-  deviceId: Promise<string> | string;
+-  /**
+-   * The resolved telemetry endpoint. When empty, telemetry is not being sent
+-   * anywhere, so full event payloads are logged locally for debugging.
+-   */
+-  telemetryEndpoint?: string;
+-};
+-
+-export type SessionTelemetryState = {
+-  isInteractive: boolean;
+-  timings: Record<string, number>;
+-  errorCount: number;
+-  mongoshrcLoaded: boolean;
+-  mongorcWarning: boolean;
+-  snippetLoadedCount: number;
+-  shellFlag: boolean;
+-  cliEvalCount: number;
+-  cliFileCount: number;
+-  evaluationCount: number;
+-  commandsRepl: Record<string, number>;
+-  commandsRc: Record<string, number>;
+-  sequence: string[];
+-  sequenceTruncated: boolean;
+-};
+-
+-export type LoggingAndTelemetryBusEventState = {
+-  hasStartedMongoshRepl: boolean;
+-  apiCallTracking: {
+-    isEnabled: boolean;
+-    apiCalls: MultiSet<Pick<ApiEvent, 'class' | 'method'>>;
+-    deprecatedApiCalls: MultiSet<Pick<ApiEvent, 'class' | 'method'>>;
+-  };
+-  usesShellOption: boolean;
+-  session: SessionTelemetryState;
+-};
++export type MongoshLoggingAndTelemetryArguments = { bus: MongoshBus };
+diff --git a/packages/shell-api/src/decorators.ts b/packages/shell-api/src/decorators.ts
+index 1ca3509..bd9ea98 100644
+--- a/packages/shell-api/src/decorators.ts
++++ b/packages/shell-api/src/decorators.ts
+@@ -248,10 +248,6 @@ function wrapWithAddSourceToResult(fn: Function): Function {
+  * automatically checks whether a user interrupt has occurred
+  * (for example, Ctrl+C in the command line variant).
+  *
+- * This also adds checks to emit deprecation notifications on the bus
+- * so that we can gather telemetry about which deprecated methods are
+- * used and how frequently.
+- *
+  * @param fn The class method to wrap.
+  * @param className The name of the class on which the method is present.
+  * @returns The wrapped class method.
+@@ -266,16 +262,12 @@ function wrapWithApiChecks<T extends (...args: any[]) => any>(
+         ...args: any[]
+       ): Promise<any> {
+         const instanceState = getShellInstanceState(this);
+-        emitApiCallTelemetry(instanceState, className, fn, true);
+         const interruptFlag = instanceState?.interrupted;
+         interruptFlag?.checkpoint();
+         const interrupt = interruptFlag?.asPromise();
+ 
+         let result: any;
+         try {
+-          if (instanceState) {
+-            instanceState.apiCallDepth++;
+-          }
+           result = await Promise.race([
+             interrupt?.promise ?? new Promise<never>(() => {}),
+             fn.call(this, ...args),
+@@ -283,9 +275,6 @@ function wrapWithApiChecks<T extends (...args: any[]) => any>(
+         } catch (e: any) {
+           throw instanceState?.transformError(e) ?? e;
+         } finally {
+-          if (instanceState) {
+-            instanceState.apiCallDepth--;
+-          }
+           if (interrupt) {
+             interrupt.destroy();
+           }
+@@ -295,21 +284,13 @@ function wrapWithApiChecks<T extends (...args: any[]) => any>(
+       })
+     : function (this: any, ...args: any[]): any {
+         const instanceState = getShellInstanceState(this);
+-        emitApiCallTelemetry(instanceState, className, fn, false);
+         const interruptFlag = instanceState?.interrupted;
+         interruptFlag?.checkpoint();
+         let result: any;
+         try {
+-          if (instanceState) {
+-            instanceState.apiCallDepth++;
+-          }
+           result = fn.call(this, ...args);
+         } catch (e: any) {
+           throw instanceState?.transformError(e) ?? e;
+-        } finally {
+-          if (instanceState) {
+-            instanceState.apiCallDepth--;
+-          }
+         }
+         interruptFlag?.checkpoint();
+         return result;
+@@ -319,29 +300,6 @@ function wrapWithApiChecks<T extends (...args: any[]) => any>(
+   return wrapper;
+ }
+ 
+-/**
+- * Emit a 'mongosh:api-call' event on the instance state's message bus,
+- * with the 'deprecated' property set if the function was marked with
+- * the {@link deprecated} decorator.
+- *
+- * @param instanceState A ShellInstanceState object.
+- * @param className The name of the class in question.
+- * @param fn The class method in question.
+- */
+-function emitApiCallTelemetry(
+-  instanceState: ShellInstanceState | undefined,
+-  className: string,
+-  fn: Function,
+-  isAsync: boolean
+-) {
+-  instanceState?.emitApiCall?.({
+-    method: fn.name,
+-    class: className,
+-    deprecated: !!(fn as any).deprecated,
+-    isAsync,
+-  });
+-}
+-
+ /**
+  * Look up the {@link ShellInstanceState} object associated with a shell API object.
+  *
+@@ -732,7 +690,7 @@ export function apiVersions(versionArray: [] | [number] | [number, number]) {
+  * Marks the decorated class/method as deprecated.
+  * A deprecated method will not be included in autocompletion.
+  *
+- * Calling a deprecated method will automatically emit a telemetry event but
++ * Calling a deprecated method preserves its normal behavior but
+  * will **not** print an automatic deprecation warning (see `printDeprecationWarning`).
+  *
+  * **Important:** To exclude the method from autocompletion use `@serverVersions`.
+@@ -865,7 +823,7 @@ export function returnType(returnType: string) {
+ /**
+  * Marks the constructor of the decorated class as being deprecated.
+  *
+- * Calling the constructor will automatically emit a telemetry event but
++ * Calling the constructor preserves its normal behavior but
+  * will **not** print an automatic deprecation warning (see `printDeprecationWarning`).
+  */
+ export function classDeprecated<T extends { prototype: any }>(
+diff --git a/packages/shell-api/src/shell-api.ts b/packages/shell-api/src/shell-api.ts
+index badaeb2..3bb1c75 100644
+--- a/packages/shell-api/src/shell-api.ts
++++ b/packages/shell-api/src/shell-api.ts
+@@ -377,33 +377,13 @@ export default class ShellApi extends ShellApiClass {
+   @returnsPromise
+   @platforms(['CLI'])
+   async enableTelemetry(): Promise<any> {
+-    try {
+-      const result = await this._instanceState.evaluationListener.setConfig?.(
+-        'enableTelemetry',
+-        true
+-      );
+-      if (result === 'success') {
+-        return i18n.__('cli-repl.cli-repl.enabledTelemetry');
+-      }
+-    } catch (err: unknown) {
+-      return String(err);
+-    }
++    return 'Telemetry has been removed from this build';
+   }
+ 
+   @returnsPromise
+   @platforms(['CLI'])
+   async disableTelemetry(): Promise<any> {
+-    try {
+-      const result = await this._instanceState.evaluationListener.setConfig?.(
+-        'enableTelemetry',
+-        false
+-      );
+-      if (result === 'success') {
+-        return i18n.__('cli-repl.cli-repl.disabledTelemetry');
+-      }
+-    } catch (err: unknown) {
+-      return String(err);
+-    }
++    return 'Telemetry has been removed from this build';
+   }
+ 
+   @returnsPromise
+diff --git a/packages/shell-api/src/shell-instance-state.ts b/packages/shell-api/src/shell-instance-state.ts
+index cb26b0f..f330c25 100644
+--- a/packages/shell-api/src/shell-instance-state.ts
++++ b/packages/shell-api/src/shell-instance-state.ts
+@@ -186,7 +186,6 @@ export class ShellInstanceState {
+   public evaluationListener: EvaluationListener;
+   public displayBatchSizeFromDBQuery: number | undefined = undefined;
+   public isInteractive = false;
+-  public apiCallDepth = 0;
+   private warningsShown: Set<string> = new Set();
+ 
+   public readonly interrupted = new InterruptFlag();
+@@ -454,10 +453,7 @@ export class ShellInstanceState {
+   }
+ 
+   public emitApiCall(event: Omit<ApiEvent, 'callDepth'>): void {
+-    this.messageBus.emit('mongosh:api-call', {
+-      ...event,
+-      callDepth: this.apiCallDepth,
+-    });
++    // Compatibility no-op: no API usage telemetry is collected.
+   }
+ 
+   public setEvaluationListener(listener: EvaluationListener): void {
+diff --git a/packages/types/src/index.ts b/packages/types/src/index.ts
+index 82ef1ee..d8f3032 100644
+--- a/packages/types/src/index.ts
++++ b/packages/types/src/index.ts
+@@ -513,7 +513,7 @@ export class SnippetShellUserConfigValidator extends ShellUserConfigValidator {
+ 
+ export class CliUserConfig extends SnippetShellUserConfig {
+   disableGreetingMessage = false;
+-  forceDisableTelemetry = false;
++  forceDisableTelemetry = true;
+   inspectCompact: number | boolean = 3;
+   inspectDepth = 6;
+   historyLength = 1000;
+@@ -523,7 +523,7 @@ export class CliUserConfig extends SnippetShellUserConfig {
+   oidcTrustedEndpoints: undefined | string[] = undefined;
+   browser: undefined | false | string = undefined;
+   updateURL = 'https://downloads.mongodb.com/compass/mongosh.json';
+-  telemetryEndpoint = 'https://mongosh-telemetry.mongodb.com';
++  telemetryEndpoint = '';
+   disableLogging = false;
+   logLocation: string | undefined = undefined;
+   logRetentionDays = 30;

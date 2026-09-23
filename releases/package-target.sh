@@ -4,6 +4,7 @@
 set -euo pipefail
 target="${1:?target required}"
 bundle="${2:?mongosh.js required}"
+node "$(dirname "$0")/audit-telemetry.mjs" --bundle "$bundle"
 out="${OUT:-out}"
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"

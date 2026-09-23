@@ -75,4 +75,8 @@ fi
 
 node --test "$root/tests/telemetry-patch.test.mjs" && ok 'upstream telemetry patch regression tests pass' || bad 'upstream telemetry patch regression tests failed'
 
+node --test "$root/tests/telemetry-audit.test.mjs" && ok 'telemetry audit guards pass' || bad 'telemetry audit guards failed'
+
+node --check "$root/tests/telemetry-runtime.test.mjs" && ok 'CLI telemetry smoke test parses' || bad 'CLI telemetry smoke test does not parse'
+
 [ "$fails" -eq 0 ] || exit 1
