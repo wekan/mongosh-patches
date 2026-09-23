@@ -30,6 +30,22 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/798bb7e">Add release menus and automated dependency checks</a>. Thanks to xet7.</summary>
+
+Add Release All and Release All Missing to both shell and Windows menus.
+Validate Upcoming notes for new releases, commit pending files, push the
+prepared source version and dispatch Actions. Missing builds keep the
+existing main-HASH version and fill absent packages.
+
+Source and lockfile hash drift only warns. Automated known-hash, keyword and
+new-URL findings stop builds; bundle signatures and runtime telemetry checks
+remain. No comprehensive AI review is required. Launcher/indicator tests and
+existing source, patch and target-planning tests pass. Hosted publication and
+Windows execution were not run.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/485f8a9">Report telemetry gate failures clearly in both release workflows</a>. Thanks to xet7.</summary>
 
 Source and bundle checks now emit GitHub error annotations, empty bundles fail,
