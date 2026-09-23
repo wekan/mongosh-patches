@@ -30,6 +30,36 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/9aad034">Remove remaining telemetry and require upstream review</a>. Thanks to xet7.</summary>
+
+The earlier sink replacement still left local telemetry collection and exported
+transmission code in upstream main. Remove the HTTP client, event schemas,
+queues, throttle files, session/command collectors and emitters, agent detection,
+and machine/OS fingerprinting dependencies. Remove automatic upstream update and
+marketing requests. Compatibility commands report removal; saved config and
+environment settings cannot enable telemetry. Ordinary local diagnostic logs,
+history, database connections and snippet downloads remain.
+
+A reviewed inventory of 478 patched source, build and dependency files stops
+builds when upstream code changes or adds another implementation. Bundle scans
+run after compilation and before packaging, including cached local bundles.
+Offline tests cover strict patch application, inert sinks, normal local logging,
+source/dependency drift and rejection of older bundles. The real CLI smoke test
+attempts to enable telemetry in eval and REPL sessions, intercepts outbound
+requests and checks telemetry logs/state. Snippets are disabled in that test to
+isolate telemetry from their separate index-download feature.
+
+The complete Node.js 26.9.0/npm 12.0.2 build passes, including 18 workspaces,
+webpack, version verification and runtime smoke tests. Webpack reports optional
+module warnings; platform archives and database-connected sessions were not run.
+This also corrects the earlier local build validation: the patch fixture tests
+were valid, but local git apply had inherited an enclosing repository and skipped
+paths. Fresh source now has its own repository and passes the patched-source
+hash audit before building. See the [audit](docs/Design/Telemetry-audit.md).
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/212b3f6">Fix telemetry patch application to upstream main</a>. Thanks to xet7.</summary>
 
 The September 23 bundle job stopped before compilation because the telemetry
