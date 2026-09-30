@@ -1088,10 +1088,9 @@ index 777ff36..0366e0c 100644
              passwordPrompt: {
                description: 'Prompts the user for a password',
 diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/analytics-helpers.ts
-index 100fdec..6adbbfa 100644
 --- a/packages/logging/src/analytics-helpers.ts
 +++ b/packages/logging/src/analytics-helpers.ts
-@@ -1,301 +1,14 @@
+@@ -1,306 +1,14 @@
 -import fs from 'fs';
 -import path from 'path';
 -import type { TelemetryEvent } from './telemetry-events';
@@ -1145,19 +1144,26 @@ index 100fdec..6adbbfa 100644
 -  getState() {
 -    return this.state;
 -  }
--}
++export class NoopAnalytics implements MongoshAnalytics {
++  track(_event?: unknown): void {}
++  async flush(): Promise<void> {}
+ }
 -
 -/**
 - * A no-op implementation of MongoshAnalytics used when telemetry is unavailable.
 - */
- export class NoopAnalytics implements MongoshAnalytics {
+-export class NoopAnalytics implements MongoshAnalytics {
 -  track(): void {
 -    // no-op
 -  }
 -  flush() {
 -    return Promise.resolve();
 -  }
--}
++export class ToggleableAnalytics extends NoopAnalytics {
++  enable(): void {}
++  disable(): void {}
++  pause(): void {}
+ }
 -
 -/**
 - * An implementation of MongoshAnalytics that forwards to another implementation
@@ -1233,7 +1239,10 @@ index 100fdec..6adbbfa 100644
 -    // created by long running process (longer than staleDuration) we make sure
 -    // that another process doesn't consider lockfile stale
 -    intervalId = setInterval(() => {
--      const now = Date.now();
+-      // Use Dates so that utimes() cannot interpret the time wrong: it reads
+-      // plain numbers as seconds, and milliseconds would silently become a
+-      // date thousands of years from now.
+-      const now = new Date();
 -      fs.promises.utimes(lockfilePath, now, now).catch(() => {
 -        // ignore errors refreshing the lockfile mtime
 -      });
@@ -1245,17 +1254,17 @@ index 100fdec..6adbbfa 100644
 -      throw e;
 -    }
 -    const stats = await fs.promises.stat(lockfilePath);
--    // To make sure that the lockfile is not just a leftover from an unclean
--    // process exit, we check whether or not it is stale
--    if (Date.now() - stats.mtimeMs > staleDuration) {
+-    // A lock's mtime is written by whichever process holds it,
+-    // so a legitimate mtime is always now or in the past.
+-    // The margin avoids stealing a lock that was just created.
+-    const age = Date.now() - stats.mtimeMs;
+-    if (age > staleDuration || age < -staleDuration) {
 -      await fs.promises.rmdir(lockfilePath);
 -      return lockfile(filepath, staleDuration);
 -    }
 -    throw new Error(`File ${filepath} already locked`);
 -  }
-+  track(_event?: unknown): void {}
-+  async flush(): Promise<void> {}
- }
+-}
 -
 -export class ThrottledAnalytics implements MongoshAnalytics {
 -  private trackQueue = new Queue<TelemetryEvent>((event) => {
@@ -1396,11 +1405,7 @@ index 100fdec..6adbbfa 100644
 -    await this.unlock();
 -    await this.target.flush();
 -  }
-+export class ToggleableAnalytics extends NoopAnalytics {
-+  enable(): void {}
-+  disable(): void {}
-+  pause(): void {}
- }
+-}
 diff --git a/packages/logging/src/helpers.ts b/packages/logging/src/helpers.ts
 index 5ae2a70..03fe8dd 100644
 --- a/packages/logging/src/helpers.ts

@@ -18,6 +18,7 @@ async function withSource(run) {
   const cwd = mkdtempSync(join(tmpdir(), 'mongosh-patch-'));
   try {
     cpSync(fixture, cwd, { recursive: true });
+    cpSync(join(root, 'tests/fixtures/upstream-87266a2d7ed9/packages'), join(cwd, 'packages'), { recursive: true });
     writeFileSync(join(cwd, 'package-lock.json'), gunzipSync(readFileSync(join(cwd, 'package-lock.json.gz'))));
     // Isolate git apply from any enclosing repository's prefix or ignore rules.
     assert.equal(spawnSync('git', ['init', '-q', cwd]).status, 0);
@@ -51,6 +52,21 @@ test('verified telemetry patch applies to the exact source from the failed build
       assert.ok(result.analytics instanceof ToggleableAnalytics);
       assert.equal(result.telemetryEndpoint, '');
     });
+  });
+});
+
+test('unreviewed analytics changes still reject the entire patch', async () => {
+  await withSource(cwd => {
+    const file = join(cwd, 'packages/logging/src/analytics-helpers.ts');
+    const text = readFileSync(file, 'utf8');
+    assert.match(text, /const now = new Date\(\);/);
+    assert.match(text, /age < -staleDuration/);
+    writeFileSync(file, text.replace('const now = new Date();', 'const now = new Date(123);'));
+    const original = source(cwd, 'config-directory.ts');
+    const result = apply(cwd);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /analytics-helpers.ts/);
+    assert.equal(source(cwd, 'config-directory.ts'), original);
   });
 });
 
