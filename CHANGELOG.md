@@ -30,6 +30,22 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/c4ae8ad">Refresh telemetry removal for upstream lock timestamp fixes</a>. Thanks to xet7.</summary>
+
+Fix the patch application failure in mongosh-patches4 at upstream commit
+87266a2d7ed9. Upstream changed the lock timestamp and stale-lock checks in
+analytics-helpers.ts; refresh the removal hunk and its checksum. The resulting
+no-op analytics implementation is unchanged.
+
+Add the exact upstream source as a fixture overlay and verify rejection of
+unreviewed analytics changes without partial patching. All workflow tests pass;
+the full failed source tree accepts the patch and passes its 478-file fingerprint
+check and 565-file indicator scan. The full npm bundle and platform packages
+were not rebuilt.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/e67fd05ec5abeefb64e56f3c1d696ede3927a410">Distinguish known upstream references from new audit findings</a>. Thanks to xet7.</summary>
 
 Show the verified Node issue and Linux header comment references as known
