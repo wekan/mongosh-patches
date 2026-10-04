@@ -23,6 +23,8 @@ concurrency:
 jobs:
   bundle:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       version: ${{ steps.meta.outputs.version }}
       node-version: ${{ steps.meta.outputs.node-version }}
@@ -63,11 +65,30 @@ jobs:
           name: mongosh-bundle
           path: out/
           if-no-files-found: error
+      # This job creates the release, so every package job can attach its own
+      # files the moment it has built and checked them.
+      - name: Create or update the release and attach the source manifest
+        if: ${{ inputs.publish && steps.meta.outputs.count != '0' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -euo pipefail
+          printf 'mongosh %s packages using prebuilt wekan/node-patches Node.js runtimes.\n' "$VERSION" > notes.md
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release edit "$VERSION" --notes-file notes.md
+          else
+            gh release create "$VERSION" --title "$VERSION" --notes-file notes.md
+          fi
+          bash _patches/releases/upload-release-assets.sh "$VERSION" out/mongosh-source.json out/mongosh.js.sha256sum
 
   packages:
     needs: bundle
     if: ${{ needs.bundle.outputs.count != '0' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -89,18 +110,8 @@ jobs:
           name: mongosh-${{ matrix.target }}
           path: out/*
           if-no-files-found: error
-
-  publish:
-    if: ${{ inputs.publish && needs.bundle.outputs.count != '0' }}
-    needs: [bundle, packages]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: mongosh-*
-          path: out
-          merge-multiple: true
-      - name: Create or update the accumulating release
+      - name: Attach this target's package and checksum to the release
+        if: ${{ inputs.publish }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -108,12 +119,36 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          assets=(out/mongosh-*.tgz out/mongosh-*.zip out/*.sha256sum out/mongosh-source.json)
-          [ -e "${assets[0]}" ] || { echo '::error::no packages'; exit 1; }
-          printf 'mongosh %s packages using prebuilt wekan/node-patches Node.js runtimes.\n' "$VERSION" > notes.md
-          if gh release view "$VERSION" >/dev/null 2>&1; then
-            gh release upload "$VERSION" "${assets[@]}" --clobber
-            gh release edit "$VERSION" --notes-file notes.md
-          else
-            gh release create "$VERSION" "${assets[@]}" --title "$VERSION" --notes-file notes.md
-          fi
+          files=(out/mongosh-*.tgz out/mongosh-*.zip out/*.sha256sum)
+          bash _patches/releases/upload-release-assets.sh "$VERSION" "${files[@]}"
+
+  # Packages are already attached by the jobs that built them. This job only
+  # checks that the release is complete and that every package matches its
+  # published checksum, so a partial rerun is verified against the release.
+  publish:
+    if: ${{ inputs.publish && needs.bundle.outputs.count != '0' }}
+    needs: [bundle, packages]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify every package and checksum on the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.bundle.outputs.version }}
+          TARGETS: ${{ needs.bundle.outputs.targets }}
+        run: |
+          set -euo pipefail
+          mkdir verify && cd verify
+          gh release download "$VERSION" --pattern mongosh-source.json --pattern mongosh.js.sha256sum
+          [ -s mongosh-source.json ] && [ -s mongosh.js.sha256sum ] || { echo '::error::source manifest or bundle checksum missing'; exit 1; }
+          count=0
+          for target in $(jq -r '.[]' <<<"$TARGETS"); do
+            ext=tgz; [[ "$target" == win* ]] && ext=zip
+            asset="mongosh-$target.$ext"
+            gh release download "$VERSION" --pattern "$asset" --pattern "$asset.sha256sum"
+            sha256sum -c "$asset.sha256sum"
+            rm -f "$asset"
+            count=$((count + 1))
+          done
+          [ "$count" -gt 0 ] || { echo '::error::no packages'; exit 1; }
+          echo "Verified $count package(s) on $VERSION."

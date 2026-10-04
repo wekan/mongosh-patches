@@ -43,6 +43,14 @@ registry using one Node release's complete runtime/checksum pairs, and packages
 the available targets under `main-HASH`. Unavailable prerequisites appear in the
 job summary and remain registered for later retries.
 
+The bundle job creates the release and attaches the source manifest. Each
+package job attaches its own archive and checksum as its last step, through
+`releases/upload-release-assets.sh` (`gh release upload --clobber` with
+retries), so a finished target is downloadable while the others still build.
+The final job uploads nothing: it downloads every package built in that run
+from the release and checks it against its published checksum. Release All
+Missing attaches and verifies its repaired targets the same way.
+
 Release All Missing accepts an existing `main-HASH`, resolves the matching
 immutable commit, and verifies the prefix. It audits both archive and checksum,
 so a half-uploaded target is never called complete. Source resolution never uses

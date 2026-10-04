@@ -5,7 +5,7 @@ fails=0
 ok(){ printf 'ok - %s\n' "$1"; }
 bad(){ printf 'FAIL - %s\n' "$1"; fails=$((fails+1)); }
 
-for script in releases/newest-release.sh releases/prepare-source.sh releases/build-bundle.sh releases/package-target.sh build.sh; do
+for script in releases/newest-release.sh releases/prepare-source.sh releases/build-bundle.sh releases/package-target.sh releases/upload-release-assets.sh build.sh; do
   bash -n "$root/$script" && ok "$script parses" || bad "$script does not parse"
 done
 
@@ -40,7 +40,23 @@ grep -q 'set-source-version.mjs.*MONGOSH_VERSION' "$root/releases/build-bundle.s
 grep -q 'source "$work/source.env"' "$root/build.sh" && ok 'local bundle uses resolved main identity' || bad 'local bundle omits its version'
 node --check "$root/releases/set-source-version.mjs" && ok 'source version helper parses' || bad 'source version helper does not parse'
 grep -q 'if-no-files-found: error' "$all" && ok 'empty artifacts fail loudly' || bad 'empty artifacts may pass'
-grep -q 'gh release upload.*--clobber' "$all" && ok 'Release All accumulates safely' || bad 'release accumulation absent'
+grep -q 'gh release upload.*--clobber' "$root/releases/upload-release-assets.sh" && ok 'Release All accumulates safely' || bad 'release accumulation absent'
+grep -q 'seq 1 "$attempts"' "$root/releases/upload-release-assets.sh" && ok 'release uploads are retried' || bad 'release uploads are not retried'
+# Each build job attaches its own files as soon as it has built and checked
+# them; the final job only verifies the release and never uploads packages.
+for wf in "$all" "$missing"; do
+  name=$(basename "$wf")
+  pkg_job=$(awk '/^  packages:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$wf")
+  final_job=$(awk '/^  publish:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$wf")
+  last_step=$(printf '%s\n' "$pkg_job" | awk '/^      - /{buf=""} {buf=buf $0 "\n"} END{printf "%s", buf}')
+  printf '%s' "$last_step" | grep -q 'upload-release-assets.sh "$VERSION"' && ok "$name packages attach their own files last" || bad "$name packages do not attach their own files"
+  printf '%s' "$pkg_job" | grep -q 'contents: write' && ok "$name package jobs may write releases" || bad "$name package jobs lack contents: write"
+  printf '%s' "$final_job" | grep -q 'gh release upload\|upload-release-assets\|download-artifact' && bad "$name final job still collects or uploads packages" || ok "$name final job does not upload packages"
+  printf '%s' "$final_job" | grep -q 'sha256sum -c' && ok "$name final job verifies published checksums" || bad "$name final job skips checksum verification"
+done
+bundle_job=$(awk '/^  bundle:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$all")
+printf '%s' "$bundle_job" | grep -q 'gh release create' && printf '%s' "$bundle_job" | grep -q 'upload-release-assets.sh "$VERSION" out/mongosh-source.json' \
+  && ok 'bundle job creates the release and attaches its manifest' || bad 'release is not created before package jobs'
 grep -q 'plan-targets.mjs node-release.json existing' "$missing" && ok 'missing audit uses runtime and archive pair planner' || bad 'missing planner absent'
 node --test "$root/tests/plan-targets.test.mjs" && ok 'runtime availability plans pass' || bad 'runtime availability plans failed'
 grep -q 'fromJSON(needs.bundle.outputs.targets)' "$all" && ok 'full matrix uses available runtimes' || bad 'full matrix is unconditional'

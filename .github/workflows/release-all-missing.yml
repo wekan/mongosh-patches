@@ -63,6 +63,8 @@ jobs:
   packages:
     needs: [audit, bundle]
     if: ${{ needs.audit.outputs.count != '0' }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -84,24 +86,41 @@ jobs:
           name: missing-${{ matrix.target }}
           path: out/*
           if-no-files-found: error
-  publish:
-    needs: [audit, packages]
-    if: ${{ needs.audit.outputs.count != '0' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: missing-*
-          path: out
-          merge-multiple: true
-      - env:
+      # The audit job confirmed the release exists; attach this target's files
+      # now instead of waiting for every other target to finish.
+      - name: Attach this target's package and checksum to the release
+        env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
           shopt -s nullglob
-          assets=(out/*)
-          [ -e "${assets[0]}" ] || { echo '::error::missing build emitted no assets'; exit 1; }
-          gh release upload "$VERSION" "${assets[@]}" --clobber
+          files=(out/*)
+          bash _patches/releases/upload-release-assets.sh "$VERSION" "${files[@]}"
+  # Packages are already attached by the jobs that built them. This job only
+  # checks that every repaired package and checksum is on the release.
+  publish:
+    needs: [audit, packages]
+    if: ${{ needs.audit.outputs.count != '0' }}
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+          TARGETS: ${{ needs.audit.outputs.targets }}
+        run: |
+          set -euo pipefail
+          mkdir verify && cd verify
+          count=0
+          for target in $(jq -r '.[]' <<<"$TARGETS"); do
+            ext=tgz; [[ "$target" == win* ]] && ext=zip
+            asset="mongosh-$target.$ext"
+            gh release download "$VERSION" --pattern "$asset" --pattern "$asset.sha256sum"
+            sha256sum -c "$asset.sha256sum"
+            rm -f "$asset"
+            count=$((count + 1))
+          done
+          [ "$count" -gt 0 ] || { echo '::error::missing build emitted no assets'; exit 1; }
           echo "Repaired ${{ needs.audit.outputs.count }} target package(s)."
