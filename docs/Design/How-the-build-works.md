@@ -51,6 +51,12 @@ The final job uploads nothing: it downloads every package built in that run
 from the release and checks it against its published checksum. Release All
 Missing attaches and verifies its repaired targets the same way.
 
+Cancelling a run keeps what finished: each attach step runs under `always()`
+once its own build step succeeded, and the final job runs under `always()` once
+the release-creating job succeeded. It verifies the attached packages and
+reports the targets that were not built; it fails only when every package job
+succeeded and a file is still missing.
+
 Release All Missing accepts an existing `main-HASH`, resolves the matching
 immutable commit, and verifies the prefix. It audits both archive and checksum,
 so a half-uploaded target is never called complete. Source resolution never uses

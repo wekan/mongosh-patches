@@ -48,6 +48,7 @@ jobs:
           cache: npm
       - run: npm install --global npm@12.0.2
       - name: Build with source, artifact and runtime telemetry checks
+        id: build
         run: bash _patches/releases/build-bundle.sh
       - id: meta
         env:
@@ -68,7 +69,7 @@ jobs:
       # This job creates the release, so every package job can attach its own
       # files the moment it has built and checked them.
       - name: Create or update the release and attach the source manifest
-        if: ${{ inputs.publish && steps.meta.outputs.count != '0' }}
+        if: ${{ always() && inputs.publish && steps.build.outcome == 'success' && steps.meta.outcome == 'success' && steps.meta.outputs.count != '0' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -101,6 +102,7 @@ jobs:
           name: mongosh-bundle
           path: bundle
       - name: Package mongosh with the matching node-patches release binary
+        id: package
         env:
           PATCHES_ROOT: _patches
           NODE_PATCHES_VERSION: ${{ needs.bundle.outputs.node-version }}
@@ -110,8 +112,10 @@ jobs:
           name: mongosh-${{ matrix.target }}
           path: out/*
           if-no-files-found: error
+      # Runs even when the workflow is cancelled, so a finished package is
+      # never lost; a package that did not build is never attached.
       - name: Attach this target's package and checksum to the release
-        if: ${{ inputs.publish }}
+        if: ${{ always() && inputs.publish && steps.package.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -126,7 +130,7 @@ jobs:
   # checks that the release is complete and that every package matches its
   # published checksum, so a partial rerun is verified against the release.
   publish:
-    if: ${{ inputs.publish && needs.bundle.outputs.count != '0' }}
+    if: ${{ always() && inputs.publish && needs.bundle.result == 'success' && needs.bundle.outputs.count != '0' }}
     needs: [bundle, packages]
     runs-on: ubuntu-latest
     steps:
@@ -135,20 +139,41 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ needs.bundle.outputs.version }}
+          PACKAGES_RESULT: ${{ needs.packages.result }}
           TARGETS: ${{ needs.bundle.outputs.targets }}
         run: |
           set -euo pipefail
           mkdir verify && cd verify
           gh release download "$VERSION" --pattern mongosh-source.json --pattern mongosh.js.sha256sum
           [ -s mongosh-source.json ] && [ -s mongosh.js.sha256sum ] || { echo '::error::source manifest or bundle checksum missing'; exit 1; }
+          gh release view "$VERSION" --json assets --jq '.assets[].name' > existing
           count=0
+          missing=()
           for target in $(jq -r '.[]' <<<"$TARGETS"); do
             ext=tgz; [[ "$target" == win* ]] && ext=zip
             asset="mongosh-$target.$ext"
+            # A cancelled or failed target is reported, not hidden; the
+            # finished ones were already attached by their own jobs.
+            if ! grep -qxF "$asset" existing || ! grep -qxF "$asset.sha256sum" existing; then
+              missing+=("$target")
+              continue
+            fi
             gh release download "$VERSION" --pattern "$asset" --pattern "$asset.sha256sum"
             sha256sum -c "$asset.sha256sum"
             rm -f "$asset"
             count=$((count + 1))
           done
-          [ "$count" -gt 0 ] || { echo '::error::no packages'; exit 1; }
+          [ "$count" -gt 0 ] || [ "$PACKAGES_RESULT" != success ] || { echo '::error::no packages'; exit 1; }
           echo "Verified $count package(s) on $VERSION."
+          if [ "${#missing[@]}" -gt 0 ]; then
+            # Per-target results are not visible here; only a target whose
+            # packages job succeeded attaches files. If every packages job
+            # succeeded, a missing file is a real fault. Otherwise the run was
+            # cancelled or a target failed (already shown by that job), and
+            # the absent targets are reported as not built.
+            if [ "$PACKAGES_RESULT" = success ]; then
+              echo "::error::packages succeeded but not attached: ${missing[*]}"
+              exit 1
+            fi
+            echo "::warning::not built in this run ($PACKAGES_RESULT): ${missing[*]}; rerun Release All Missing to add them"
+          fi

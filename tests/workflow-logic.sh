@@ -54,6 +54,55 @@ for wf in "$all" "$missing"; do
   printf '%s' "$final_job" | grep -q 'gh release upload\|upload-release-assets\|download-artifact' && bad "$name final job still collects or uploads packages" || ok "$name final job does not upload packages"
   printf '%s' "$final_job" | grep -q 'sha256sum -c' && ok "$name final job verifies published checksums" || bad "$name final job skips checksum verification"
 done
+# Cancelling a run must not throw away finished packages: every attach step
+# runs under always() but only after its own build step succeeded, and the
+# final job runs under always() once the release-creating job succeeded.
+# Prints one problem per line; empty output means the workflow is cancel-safe.
+cancel_problems() {
+  local wf="$1" job attach final
+  for job in packages bundle; do
+    job_text=$(awk -v j="  $job:" '$0==j{f=1;next} /^  [a-z-]+:/{f=0} f' "$wf")
+    attach=$(printf '%s\n' "$job_text" | awk '/^      - /{if(buf ~ /upload-release-assets/) out=out buf; buf=""} {buf=buf $0 "\n"} END{if(buf ~ /upload-release-assets/) out=out buf; printf "%s", out}')
+    [ -n "$attach" ] || continue
+    ifs=$(printf '%s' "$attach" | grep -E '^        if:' || true)
+    [ -n "$ifs" ] || { echo "$job attach step has no condition"; continue; }
+    printf '%s\n' "$ifs" | grep -q 'always()' || echo "$job attach step is skipped when the run is cancelled"
+    ids=$(printf '%s' "$ifs" | grep -o "steps\.[a-z-]*\.outcome == 'success'" | sed "s/steps\.\([a-z-]*\)\..*/\1/" || true)
+    [ -n "$ids" ] || echo "$job attach step does not require its build step to succeed"
+    for id in $ids; do
+      printf '%s' "$job_text" | grep -qE "^ +(- )?id: $id$" || echo "$job attach step checks unknown step id $id"
+    done
+  done
+  final=$(awk '/^  publish:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$wf" | grep -E '^    if:' || true)
+  printf '%s' "$final" | grep -q 'always()' || echo "final job is skipped when the run is cancelled"
+  printf '%s' "$final" | grep -q '!cancelled()' && echo "final job uses !cancelled()"
+  printf '%s' "$final" | grep -qE "needs\.(bundle|audit)\.result == 'success'" || echo "final job does not require the release-creating job"
+  awk '/^  publish:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$wf" | grep -q 'PACKAGES_RESULT: ${{ needs.packages.result }}' \
+    || echo "final job cannot tell a cancelled run from a lost package"
+  return 0
+}
+for wf in "$all" "$missing"; do
+  name=$(basename "$wf")
+  problems=$(cancel_problems "$wf")
+  [ -z "$problems" ] && ok "$name attaches finished packages and verifies them after cancellation" || bad "$name is not cancel-safe: $problems"
+done
+grep -q 'id: build' "$all" && grep -q "steps.build.outcome == 'success'" "$all" && ok 'bundle attach waits for a successful bundle build' || bad 'bundle attach ignores its build outcome'
+# Negative tests: each regression must be caught by cancel_problems.
+neg_dir=$(mktemp -d "${TMPDIR:-/tmp}/workflow-logic.XXXXXX")
+neg() {
+  local label="$1" wf="$2" expr="$3" out="$neg_dir/case.yml"
+  sed -E "$expr" "$wf" > "$out"
+  [ -n "$(cancel_problems "$out")" ] && ok "negative: $label is rejected" || bad "negative: $label is accepted"
+}
+neg 'attach step without always()' "$all" "s/if: \\$\\{\\{ always\(\) && inputs.publish && steps.package/if: \${{ inputs.publish \&\& steps.package/"
+neg 'missing attach step without always()' "$missing" "s/if: \\$\\{\\{ always\(\) && steps.package/if: \${{ steps.package/"
+neg 'attach step without build outcome' "$all" "s/ && steps.package.outcome == 'success'//"
+neg 'bundle attach without always()' "$all" "s/if: \\$\\{\\{ always\(\) && inputs.publish && steps.build/if: \${{ inputs.publish \&\& steps.build/"
+neg 'build step id removed' "$missing" "s/- id: package/-/"
+neg 'final job with default condition' "$all" "s/^    if: \\$\\{\\{ always\(\) && inputs.publish && needs.bundle/    if: \${{ inputs.publish \&\& needs.bundle/"
+neg 'final job with !cancelled()' "$missing" "s/^    if: \\$\\{\\{ always\(\) && needs.audit/    if: \${{ !cancelled() \&\& needs.audit/"
+neg 'final job without release-job check' "$missing" "s/ && needs.audit.result == 'success'//"
+rm -rf "$neg_dir"
 bundle_job=$(awk '/^  bundle:/{f=1;next} /^  [a-z-]+:/{f=0} f' "$all")
 printf '%s' "$bundle_job" | grep -q 'gh release create' && printf '%s' "$bundle_job" | grep -q 'upload-release-assets.sh "$VERSION" out/mongosh-source.json' \
   && ok 'bundle job creates the release and attaches its manifest' || bad 'release is not created before package jobs'
