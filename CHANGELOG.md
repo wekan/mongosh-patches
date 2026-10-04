@@ -30,6 +30,21 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/c444eed">Attach each package to the release as soon as its job has built it</a>. Thanks to xet7.</summary>
+
+Packages appeared on the GitHub Release only after every target had finished,
+because one final job collected all artifacts and uploaded them together. The
+bundle job now creates the release and attaches the source manifest, and each
+package job attaches its own archive and checksum as its last step through
+`releases/upload-release-assets.sh` (`gh release upload --clobber`, retried).
+The final job uploads nothing; it downloads each package built in the run from
+the release and verifies its checksum. Release All Missing does the same for
+repaired targets. Workflow tests require per-job uploads and checksum checks,
+and fail on the previous workflows; actionlint passes. Not run on GitHub.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/c4ae8ad">Refresh telemetry removal for upstream lock timestamp fixes</a>. Thanks to xet7.</summary>
 
 Fix the patch application failure in mongosh-patches4 at upstream commit
