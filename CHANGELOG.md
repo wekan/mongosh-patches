@@ -30,6 +30,21 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/07211d3">Attach finished packages even when a release run is cancelled</a>. Thanks to xet7.</summary>
+
+Cancelling Release All or Release All Missing attached no release files at all.
+Every attach step now runs under `always()` once its own build step succeeded,
+so packages that were finished before the cancel stay on the release. The final
+job runs under `always()` once the release-creating job succeeded; it verifies
+the attached packages against their checksums, reports the targets that were
+not built, and fails only when every package job succeeded and a file is still
+missing. Workflow tests pin both conditions, and negative tests reject attach
+steps or a final job that cancellation would skip. actionlint passes. Not run
+on GitHub.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/c444eed">Attach each package to the release as soon as its job has built it</a>. Thanks to xet7.</summary>
 
 Packages appeared on the GitHub Release only after every target had finished,
