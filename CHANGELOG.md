@@ -30,6 +30,21 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/f022711">Make the telemetry removal apply to upstream mongosh 2.13.0 again</a>. Thanks to xet7.</summary>
+
+Upstream commit `291267b46fe0` bumped cli-repl to 2.13.0 and the `@mongosh/*`
+workspace packages to 5.9.2. The bumps sit next to the removed device-id,
+get-os-info and native-machine-id dependencies, so the `package-lock.json` and
+`packages/cli-repl/package.json` hunks stopped applying and the release failed
+in `prepare-source.sh`. The same removals were made on that source and the
+patch regenerated; all other hunks are unchanged, and the telemetry audit passes
+on the patched source. A fixture overlay with the two unchanged upstream files
+keeps the patch tests on the newest source; the previous patch fails four of
+them.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/07211d3">Attach finished packages even when a release run is cancelled</a>. Thanks to xet7.</summary>
 
 Cancelling Release All or Release All Missing attached no release files at all.
