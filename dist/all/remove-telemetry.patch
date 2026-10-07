@@ -1,8 +1,8 @@
 diff --git a/package-lock.json b/package-lock.json
-index 4811c95..b74a6f2 100644
+index 5453598..229d3b7 100644
 --- a/package-lock.json
 +++ b/package-lock.json
-@@ -7728,12 +7728,6 @@
+@@ -7121,12 +7121,6 @@
          "node": ">=10"
        }
      },
@@ -15,7 +15,7 @@ index 4811c95..b74a6f2 100644
      "node_modules/@mongodb-js/devtools-connect": {
        "version": "3.14.9",
        "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-3.14.9.tgz",
-@@ -8011,12 +8005,6 @@
+@@ -7404,12 +7398,6 @@
        "resolved": "configs/eslint-config-mongosh",
        "link": true
      },
@@ -28,7 +28,7 @@ index 4811c95..b74a6f2 100644
      "node_modules/@mongodb-js/mongodb-constants": {
        "version": "0.33.0",
        "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-constants/-/mongodb-constants-0.33.0.tgz",
-@@ -8409,30 +8397,6 @@
+@@ -8030,30 +8018,6 @@
          "node": ">=8"
        }
      },
@@ -59,17 +59,17 @@ index 4811c95..b74a6f2 100644
      "node_modules/@mongodb-js/oidc-http-server-pages": {
        "version": "1.2.6",
        "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-1.2.6.tgz",
-@@ -38905,9 +38869,7 @@
-       "version": "2.12.0",
+@@ -38477,9 +38441,7 @@
+       "version": "2.13.0",
        "license": "Apache-2.0",
        "dependencies": {
 -        "@mongodb-js/device-id": "^0.4.13",
          "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -        "@mongodb-js/get-os-info": "^0.7.0",
          "@mongosh/arg-parser": "^5.6.0",
-         "@mongosh/autocomplete": "^5.9.0",
-         "@mongosh/editor": "^5.9.0",
-@@ -38963,7 +38925,6 @@
+         "@mongosh/autocomplete": "^5.9.2",
+         "@mongosh/editor": "^5.9.2",
+@@ -38535,7 +38497,6 @@
          "node": ">=18.19.0"
        },
        "optionalDependencies": {
@@ -78,7 +78,7 @@ index 4811c95..b74a6f2 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index 8c65349..7d1c15d 100644
+index c439afc..ae28baf 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
 @@ -57,19 +57,11 @@
@@ -99,8 +99,8 @@ index 8c65349..7d1c15d 100644
 -    "@mongodb-js/get-os-info": "^0.7.0",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
      "@mongosh/arg-parser": "^5.6.0",
-     "@mongosh/autocomplete": "^5.9.0",
-     "@mongosh/editor": "^5.9.0",
+     "@mongosh/autocomplete": "^5.9.2",
+     "@mongosh/editor": "^5.9.2",
 @@ -120,7 +112,6 @@
      "webpack-merge": "^5.8.0"
    },
@@ -1088,6 +1088,7 @@ index 777ff36..0366e0c 100644
              passwordPrompt: {
                description: 'Prompts the user for a password',
 diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/analytics-helpers.ts
+index fb66030..6adbbfa 100644
 --- a/packages/logging/src/analytics-helpers.ts
 +++ b/packages/logging/src/analytics-helpers.ts
 @@ -1,306 +1,14 @@
@@ -1144,26 +1145,19 @@ diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/an
 -  getState() {
 -    return this.state;
 -  }
-+export class NoopAnalytics implements MongoshAnalytics {
-+  track(_event?: unknown): void {}
-+  async flush(): Promise<void> {}
- }
+-}
 -
 -/**
 - * A no-op implementation of MongoshAnalytics used when telemetry is unavailable.
 - */
--export class NoopAnalytics implements MongoshAnalytics {
+ export class NoopAnalytics implements MongoshAnalytics {
 -  track(): void {
 -    // no-op
 -  }
 -  flush() {
 -    return Promise.resolve();
 -  }
-+export class ToggleableAnalytics extends NoopAnalytics {
-+  enable(): void {}
-+  disable(): void {}
-+  pause(): void {}
- }
+-}
 -
 -/**
 - * An implementation of MongoshAnalytics that forwards to another implementation
@@ -1264,7 +1258,9 @@ diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/an
 -    }
 -    throw new Error(`File ${filepath} already locked`);
 -  }
--}
++  track(_event?: unknown): void {}
++  async flush(): Promise<void> {}
+ }
 -
 -export class ThrottledAnalytics implements MongoshAnalytics {
 -  private trackQueue = new Queue<TelemetryEvent>((event) => {
@@ -1405,7 +1401,11 @@ diff --git a/packages/logging/src/analytics-helpers.ts b/packages/logging/src/an
 -    await this.unlock();
 -    await this.target.flush();
 -  }
--}
++export class ToggleableAnalytics extends NoopAnalytics {
++  enable(): void {}
++  disable(): void {}
++  pause(): void {}
+ }
 diff --git a/packages/logging/src/helpers.ts b/packages/logging/src/helpers.ts
 index 5ae2a70..03fe8dd 100644
 --- a/packages/logging/src/helpers.ts
