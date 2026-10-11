@@ -30,6 +30,18 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/1f4d6cf">Release All works with a GitHub CLI older than 2.48</a>. Thanks to xet7.</summary>
+
+The release script read the list of earlier releases with
+`gh api --paginate --slurp`, and `--slurp` exists only from GitHub CLI 2.48
+on. With an older `gh` the release stopped with "unknown flag: --slurp".
+`--paginate` alone prints the pages one after another, and `gh_pages()` now
+reads them that way. A truncated page is still an error, never a shorter list.
+`tests/remoteRelease.test.py` feeds it pages the way `gh` prints them.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/f022711">Make the telemetry removal apply to upstream mongosh 2.13.0 again</a>. Thanks to xet7.</summary>
 
 Upstream commit `291267b46fe0` bumped cli-repl to 2.13.0 and the `@mongosh/*`
