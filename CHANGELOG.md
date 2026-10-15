@@ -27,7 +27,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-d8ec778c96d0 2026-10-16 mongosh-patches release
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/d32bf87">Make the telemetry removal apply to upstream mongosh d8ec778 again</a>. Thanks to xet7.</summary>
