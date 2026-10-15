@@ -1,5 +1,5 @@
 diff --git a/package-lock.json b/package-lock.json
-index 5453598..229d3b7 100644
+index 99c158a..35a06ac 100644
 --- a/package-lock.json
 +++ b/package-lock.json
 @@ -7121,12 +7121,6 @@
@@ -59,17 +59,17 @@ index 5453598..229d3b7 100644
      "node_modules/@mongodb-js/oidc-http-server-pages": {
        "version": "1.2.6",
        "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-1.2.6.tgz",
-@@ -38477,9 +38441,7 @@
+@@ -38492,9 +38456,7 @@
        "version": "2.13.0",
        "license": "Apache-2.0",
        "dependencies": {
 -        "@mongodb-js/device-id": "^0.4.13",
          "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -        "@mongodb-js/get-os-info": "^0.7.0",
-         "@mongosh/arg-parser": "^5.6.0",
-         "@mongosh/autocomplete": "^5.9.2",
-         "@mongosh/editor": "^5.9.2",
-@@ -38535,7 +38497,6 @@
+         "@mongosh/arg-parser": "^5.6.1",
+         "@mongosh/autocomplete": "^5.9.3",
+         "@mongosh/editor": "^5.9.3",
+@@ -38550,7 +38512,6 @@
          "node": ">=18.19.0"
        },
        "optionalDependencies": {
@@ -78,7 +78,7 @@ index 5453598..229d3b7 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index c439afc..ae28baf 100644
+index a76d15d..480bc57 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
 @@ -57,19 +57,11 @@
@@ -98,9 +98,9 @@ index c439afc..ae28baf 100644
      "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -    "@mongodb-js/get-os-info": "^0.7.0",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
-     "@mongosh/arg-parser": "^5.6.0",
-     "@mongosh/autocomplete": "^5.9.2",
-     "@mongosh/editor": "^5.9.2",
+     "@mongosh/arg-parser": "^5.6.1",
+     "@mongosh/autocomplete": "^5.9.3",
+     "@mongosh/editor": "^5.9.3",
 @@ -120,7 +112,6 @@
      "webpack-merge": "^5.8.0"
    },
