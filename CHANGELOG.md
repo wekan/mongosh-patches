@@ -30,6 +30,20 @@ newest node-patches release.
 # Upcoming mongosh-patches release
 
 <details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/d32bf87">Make the telemetry removal apply to upstream mongosh d8ec778 again</a>. Thanks to xet7.</summary>
+
+Upstream commit `d8ec778c96d0` bumped `@mongosh/arg-parser` to 5.6.1 and
+`@mongosh/autocomplete` and `editor` to 5.9.3, next to the removed device-id,
+get-os-info and native-machine-id dependencies, so the `package-lock.json` and
+`packages/cli-repl/package.json` hunks stopped applying and every build failed
+in `prepare-source.sh`. The same lines are removed from that source and the
+patch regenerated; every other section is byte-identical, and the telemetry
+audit passes on the patched source. The fixture overlay is now that commit's
+two files; the previous patch fails four of the patch tests on it.
+
+</details>
+
+<details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/1f4d6cf">Release All works with a GitHub CLI older than 2.48</a>. Thanks to xet7.</summary>
 
 The release script read the list of earlier releases with
