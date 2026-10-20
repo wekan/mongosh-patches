@@ -19,9 +19,11 @@ The historical `enableTelemetry()` and `disableTelemetry()` commands remain
 inert and report that telemetry has been removed. Automatic upstream update and
 marketing requests are removed too.
 
-Source preparation and building verify an inventory of reviewed source and
-dependency hashes. New upstream runtime code stops the build for review, even if
-it adds telemetry under a different name. The bundle builder runs network-guarded
+Source preparation and building check an inventory of reviewed source and
+dependency hashes. A changed hash is reported, not fatal: upstream changes every
+day. What stops the build is new evidence of reporting - a new URL literal, a
+suspicious keyword or a known telemetry hash - wherever it appears, under any
+name (see the best-effort policy in the audit). The bundle builder runs network-guarded
 CLI smoke tests; building and packaging scan the artifact for removed telemetry
 implementations. See [the audit and review procedure](docs/Design/Telemetry-audit.md).
 
@@ -55,10 +57,9 @@ Both workflows and `build.sh all` intersect this registry with the runtime AND
 checksum assets in one selected node-patches release before scheduling packages.
 Unavailable targets are reported in the job log and workflow summary; they are
 not built or published. Release All Missing checks them again on its next run.
-At node-patches v24.20.0, Windows ARM64 and FreeBSD x64 have build definitions but
-no published runtimes, so the other fourteen targets can complete independently.
 No older runtime, differently named architecture, or unverified binary is used as
-a fallback. These two packages remain blocked until node-patches publishes them.
+a fallback. Since node-patches v26.12.0 publishes all sixteen runtimes, every
+target is built; main-e9818a9250ab carries all sixteen packages.
 
 ```sh
 ./build.sh bundle

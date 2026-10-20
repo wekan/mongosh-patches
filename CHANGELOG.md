@@ -22,8 +22,6 @@ newest node-patches release.
 
 - Build and test target-native optional addons for Kerberos, client-side field
   encryption, keychains and machine identity on every additional Node port.
-- Complete FreeBSD and Windows ARM64 packaging once node-patches publishes
-  their registered runtimes and checksums.
 
 </details>
 
