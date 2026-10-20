@@ -25,7 +25,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-60413412c06c 2026-10-20 mongosh-patches release
 
 **In short:** builds upstream mongosh `60413412c06c` (2.13.0, a flatted 3.4.3
 dependency bump), whose source the telemetry removal applies to unchanged, and
