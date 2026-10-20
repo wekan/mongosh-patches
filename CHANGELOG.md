@@ -25,6 +25,27 @@ newest node-patches release.
 
 </details>
 
+# Upcoming mongosh-patches release
+
+**In short:** builds upstream mongosh `60413412c06c` (2.13.0, a flatted 3.4.3
+dependency bump), whose source the telemetry removal applies to unchanged, and
+the README says what the release really does: every target builds, and a
+changed hash is reported, not fatal.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/090a58b">README: every target builds, and a changed hash is reported, not fatal</a>. Thanks to xet7.</summary>
+
+The README still said Windows ARM64 and FreeBSD x64 were blocked for want of
+node-patches runtimes. node-patches v26.12.0 publishes both, and
+main-e9818a9250ab carries all sixteen packages, so that paragraph and its TODO
+Later item are gone. It also said new upstream code stops the build. Under the
+best-effort policy a changed hash only warns; a new URL, a suspicious keyword or
+a known telemetry hash stops it, and the README now says so. Before this
+release, `prepare-source.sh` was run locally on upstream `60413412c06c`: both
+patch checksums verify, the telemetry removal applies, and the audit passes.
+
+</details>
+
 # main-d8ec778c96d0 2026-10-16 mongosh-patches release
 
 <details>
