@@ -25,6 +25,22 @@ newest node-patches release.
 
 </details>
 
+# Upcoming mongosh-patches release
+
+**In short:** **Cancel workflow** stops a release run: the checks that still
+run after a cancel now end on their own.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/561152e">Cancel workflow stops the run: every job after a cancel has a timeout</a>. Thanks to xet7.</summary>
+
+Both `publish` jobs run on `always()`, which Cancel workflow does not stop,
+and had no `timeout-minutes`, so a hung `gh` call could keep a cancelled run
+going for GitHub's six-hour default. They now have 30 minutes.
+`tests/workflow-logic.sh` fails on a job on `always()` that is a reusable
+workflow or has no timeout of 60 minutes or less.
+
+</details>
+
 # main-60413412c06c 2026-10-20 mongosh-patches release
 
 **In short:** builds upstream mongosh `60413412c06c` (2.13.0, a flatted 3.4.3
