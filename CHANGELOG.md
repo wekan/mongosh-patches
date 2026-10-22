@@ -25,7 +25,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-1cbc6e5e9d31 2026-10-22 mongosh-patches release
 
 **In short:** the release workflows use **actions/setup-node** v7.
 
