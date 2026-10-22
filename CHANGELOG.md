@@ -25,7 +25,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-60413412c06c 2026-10-22 mongosh-patches release
 
 **In short:** **Cancel workflow** stops a release run: the checks that still
 run after a cancel now end on their own.
