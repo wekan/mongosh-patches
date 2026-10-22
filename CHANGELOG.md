@@ -25,6 +25,20 @@ newest node-patches release.
 
 </details>
 
+# Upcoming mongosh-patches release
+
+**In short:** the release workflows use **actions/setup-node** v7.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/67219d5">actions/setup-node v6 to v7 in both release workflows</a>. Thanks to xet7.</summary>
+
+v7 is an ESM rewrite with manifest-fetch retries and Node version validation.
+It no longer exports a dummy `NODE_AUTH_TOKEN`, which nothing here uses,
+because these workflows publish nothing to npm. `tests/workflow-logic.sh`
+passes.
+
+</details>
+
 # main-60413412c06c 2026-10-22 mongosh-patches release
 
 **In short:** **Cancel workflow** stops a release run: the checks that still
