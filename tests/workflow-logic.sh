@@ -145,4 +145,43 @@ node --test "$root/tests/telemetry-audit.test.mjs" && ok 'telemetry audit guards
 
 node --check "$root/tests/telemetry-runtime.test.mjs" && ok 'CLI telemetry smoke test parses' || bad 'CLI telemetry smoke test does not parse'
 
+# ── Cancel workflow stops the run ─────────────────────────────────────────────
+#
+# Cancelling a run re-evaluates the `if:` of every running job, and a job whose
+# `if:` is still true - always() is, in a cancelled run - is NOT cancelled and
+# still starts if it has not. So a job on always() must be one that ends on its
+# own: a short report with a timeout of its own, never a reusable workflow (which
+# can have none) and never a build. node-patches' openbsd-arm64 resume stages
+# were reusable workflows on always(), and Cancel workflow did not stop them.
+echo
+echo "Cancel workflow stops the run:"
+if cancel_bad="$(python3 - "$root/.github/workflows" <<'PY'
+import glob, os, re, sys
+bad = []
+for f in sorted(glob.glob(os.path.join(sys.argv[1], '*.y*ml'))):
+    t = open(f).read()
+    m = re.search(r'^jobs:\n', t, re.M)
+    if not m:
+        continue
+    for p in re.split(r'^(?=  [A-Za-z0-9_-]+:\s*$)', t[m.end():], flags=re.M):
+        h = re.match(r'  ([A-Za-z0-9_-]+):', p)
+        c = re.search(r'^    if:\s*(.+)$', p, re.M)
+        if not h or not c or 'always()' not in c.group(1):
+            continue
+        n = os.path.basename(f) + ': ' + h.group(1)
+        if re.search(r'^    uses:', p, re.M):
+            bad.append(n + ' calls a reusable workflow, which can have no timeout')
+            continue
+        to = re.search(r'^    timeout-minutes:\s*(\d+)', p, re.M)
+        if not to or int(to.group(1)) > 60:
+            bad.append(n + ' has no timeout-minutes of 60 or less')
+print('\n'.join(bad))
+sys.exit(1 if bad else 0)
+PY
+)"; then
+  ok "every job that runs after a cancel is bounded by its own timeout"
+else
+  while IFS= read -r l; do bad "$l, so Cancel workflow cannot stop it"; done <<< "$cancel_bad"
+fi
+
 [ "$fails" -eq 0 ] || exit 1

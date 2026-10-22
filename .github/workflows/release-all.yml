@@ -133,6 +133,8 @@ jobs:
     if: ${{ always() && inputs.publish && needs.bundle.result == 'success' && needs.bundle.outputs.count != '0' }}
     needs: [bundle, packages]
     runs-on: ubuntu-latest
+    # always(), which Cancel cannot stop: bounded, so it never runs on for hours.
+    timeout-minutes: 30
     steps:
       - name: Verify every package and checksum on the release
         env:
