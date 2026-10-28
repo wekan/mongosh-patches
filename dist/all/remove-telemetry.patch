@@ -1,8 +1,8 @@
 diff --git a/package-lock.json b/package-lock.json
-index 99c158a..35a06ac 100644
+index 9974d42..0b11ed7 100644
 --- a/package-lock.json
 +++ b/package-lock.json
-@@ -7121,12 +7121,6 @@
+@@ -7104,12 +7104,6 @@
          "node": ">=10"
        }
      },
@@ -15,7 +15,7 @@ index 99c158a..35a06ac 100644
      "node_modules/@mongodb-js/devtools-connect": {
        "version": "3.14.9",
        "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-3.14.9.tgz",
-@@ -7404,12 +7398,6 @@
+@@ -7387,12 +7381,6 @@
        "resolved": "configs/eslint-config-mongosh",
        "link": true
      },
@@ -28,7 +28,7 @@ index 99c158a..35a06ac 100644
      "node_modules/@mongodb-js/mongodb-constants": {
        "version": "0.33.0",
        "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-constants/-/mongodb-constants-0.33.0.tgz",
-@@ -8030,30 +8018,6 @@
+@@ -8013,30 +8001,6 @@
          "node": ">=8"
        }
      },
@@ -59,17 +59,17 @@ index 99c158a..35a06ac 100644
      "node_modules/@mongodb-js/oidc-http-server-pages": {
        "version": "1.2.6",
        "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-1.2.6.tgz",
-@@ -38492,9 +38456,7 @@
-       "version": "2.13.0",
+@@ -39108,9 +39072,7 @@
+       "version": "2.14.0",
        "license": "Apache-2.0",
        "dependencies": {
 -        "@mongodb-js/device-id": "^0.4.13",
          "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -        "@mongodb-js/get-os-info": "^0.7.0",
          "@mongosh/arg-parser": "^5.6.1",
-         "@mongosh/autocomplete": "^5.9.3",
-         "@mongosh/editor": "^5.9.3",
-@@ -38550,7 +38512,6 @@
+         "@mongosh/autocomplete": "^5.9.5",
+         "@mongosh/editor": "^5.9.5",
+@@ -39166,7 +39128,6 @@
          "node": ">=18.19.0"
        },
        "optionalDependencies": {
@@ -78,7 +78,7 @@ index 99c158a..35a06ac 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index a76d15d..480bc57 100644
+index 14f7fba..5b37083 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
 @@ -57,19 +57,11 @@
@@ -99,8 +99,8 @@ index a76d15d..480bc57 100644
 -    "@mongodb-js/get-os-info": "^0.7.0",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
      "@mongosh/arg-parser": "^5.6.1",
-     "@mongosh/autocomplete": "^5.9.3",
-     "@mongosh/editor": "^5.9.3",
+     "@mongosh/autocomplete": "^5.9.5",
+     "@mongosh/editor": "^5.9.5",
 @@ -120,7 +112,6 @@
      "webpack-merge": "^5.8.0"
    },
@@ -110,7 +110,7 @@ index a76d15d..480bc57 100644
      "glibc-version": "^1.0.1",
      "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/src/cli-repl.ts b/packages/cli-repl/src/cli-repl.ts
-index 4278f5a..2ef669c 100644
+index 7b46b51..2ef669c 100644
 --- a/packages/cli-repl/src/cli-repl.ts
 +++ b/packages/cli-repl/src/cli-repl.ts
 @@ -30,8 +30,7 @@ import type { MongoshNodeReplOptions, MongoshIOProvider } from './mongosh-repl';
@@ -394,24 +394,35 @@ index 4278f5a..2ef669c 100644
    }
  
    async setLoggingEnabled(enabled: boolean): Promise<void> {
-@@ -718,54 +595,18 @@ export class CliRepl implements MongoshIOProvider {
+@@ -718,65 +595,18 @@ export class CliRepl implements MongoshIOProvider {
      }
    }
  
 -  /**
--   * Telemetry is only collected for sessions that are interactive or driven by
--   * an AI agent. Scripts passed via --eval or as a file are not tracked, unless
--   * they also enter the REPL afterwards (--shell).
+-   * Telemetry is only collected for agent sessions or REPL sessions with a
+-   * terminal. Input piped or redirected into the REPL (`mongosh < script.js`,
+-   * `echo ... | mongosh`) is still interactive for mongosh, but is not tracked.
 -   *
--   * This is derived from the CLI options rather than from
+-   * This is derived from the CLI options and the input stream rather than from
 -   * `mongoshRepl.isInteractive`, so that it holds from process start - events
 -   * are emitted (and buffered by ToggleableAnalytics) before the REPL exists.
 -   */
 +  /** Compatibility query: this build has no tracked session kinds. */
    get isTrackedSessionKind(): boolean {
 -    return (
--      CliRepl.getFileAndEvalInfo(this.cliOptions).willEnterInteractiveMode ||
+-      (CliRepl.getFileAndEvalInfo(this.cliOptions).willEnterInteractiveMode &&
+-        this.hasTerminalInput) ||
 -      !!getAiAgent()
+-    );
+-  }
+-
+-  /**
+-   * Whether input comes from a terminal rather than a pipe or a file.
+-   */
+-  private get hasTerminalInput(): boolean {
+-    return (
+-      !!(this.input as { isTTY?: boolean }).isTTY ||
+-      !!process.env.MONGOSH_FORCE_TERMINAL
 -    );
 +    return false;
    }
@@ -454,7 +465,7 @@ index 4278f5a..2ef669c 100644
    }
  
    async loadCommandLineFilesAndEval(
-@@ -1014,9 +855,9 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1025,9 +855,9 @@ export class CliRepl implements MongoshIOProvider {
    async getConfig<K extends keyof CliUserConfig>(
      key: K
    ): Promise<CliUserConfig[K]> {
@@ -467,7 +478,7 @@ index 4278f5a..2ef669c 100644
      return (
        (this.config as CliUserConfig)[key] ??
        (this.globalConfig as CliUserConfig)?.[key] ??
-@@ -1036,15 +877,11 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1047,15 +877,11 @@ export class CliRepl implements MongoshIOProvider {
          "The 'forceDisableTelemetry' setting cannot be modified"
        );
      }
@@ -486,7 +497,7 @@ index 4278f5a..2ef669c 100644
      if (key === 'disableLogging') {
        await this.setLoggingEnabled(!value);
      }
-@@ -1269,32 +1106,7 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1280,32 +1106,7 @@ export class CliRepl implements MongoshIOProvider {
          }
        }
        markTime(TimingCategories.REPLInstantiation, 'output flushed');
@@ -519,7 +530,7 @@ index 4278f5a..2ef669c 100644
        await this.logWriter?.flush();
  
        markTime(TimingCategories.Logging, 'flushed log writer');
-@@ -1410,49 +1222,7 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1421,49 +1222,7 @@ export class CliRepl implements MongoshIOProvider {
    }
  
    async fetchMongoshUpdateUrl() {

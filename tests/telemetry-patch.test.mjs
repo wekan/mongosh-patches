@@ -19,9 +19,9 @@ async function withSource(run) {
   try {
     cpSync(fixture, cwd, { recursive: true });
     cpSync(join(root, 'tests/fixtures/upstream-87266a2d7ed9/packages'), join(cwd, 'packages'), { recursive: true });
-    // Newest upstream manifest and lockfile (mongosh 2.13.0; @mongosh/arg-parser
-    // 5.6.1, autocomplete and editor 5.9.3 bumps).
-    cpSync(join(root, 'tests/fixtures/upstream-d8ec778c96d0'), cwd, { recursive: true });
+    // Newest upstream manifest, lockfile and cli-repl.ts (mongosh 2.14.0;
+    // autocomplete and editor 5.9.5, and the hasTerminalInput session check).
+    cpSync(join(root, 'tests/fixtures/upstream-def034db7e5d'), cwd, { recursive: true });
     writeFileSync(join(cwd, 'package-lock.json'), gunzipSync(readFileSync(join(cwd, 'package-lock.json.gz'))));
     // Isolate git apply from any enclosing repository's prefix or ignore rules.
     assert.equal(spawnSync('git', ['init', '-q', cwd]).status, 0);
