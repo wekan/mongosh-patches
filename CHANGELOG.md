@@ -25,6 +25,25 @@ newest node-patches release.
 
 </details>
 
+# Upcoming mongosh-patches release
+
+**In short:** the telemetry removal applies to upstream **def034d** (mongosh
+2.14.0) again, including its new terminal-input check for tracked sessions.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/1a4d691">Refresh telemetry removal for upstream mongosh def034db7e5d</a>. Thanks to xet7.</summary>
+
+Upstream moved `@mongosh/autocomplete` and `editor` to 5.9.5, which changed
+the context of the manifest and lockfile hunks, and gave `cli-repl.ts` a
+`hasTerminalInput` getter deciding which sessions are tracked, so every build
+stopped at prepare-source. The same lines are removed, and the getter goes
+with the tracking logic it served. The other files' sections are unchanged.
+The test overlay is def034d's; the patch tests pass on it and the previous
+patch fails four. `prepare-source.sh` on a fresh def034d applies the patch and
+passes the telemetry and dependency audits.
+
+</details>
+
 # main-1cbc6e5e9d31 2026-10-22 mongosh-patches release
 
 **In short:** the release workflows use **actions/setup-node** v7.
