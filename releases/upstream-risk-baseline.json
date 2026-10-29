@@ -4478,6 +4478,14 @@
       ],
       "keywords": {},
       "reason": "Known non-reporting reference URL in an added source comment; verified at upstream commit 166c7cdbdccf1a641a7a5f25ae913a098f7702cf."
+    },
+    "packages/build/src/evergreen/dispatch-npm-publish.mock.mjs": {
+      "sha256": "8fca7a42cbd93c55c8eac49c828c0f7994c448d60a714eae8de3930b224a5559",
+      "urls": [
+        "https://github.com/mongodb-js/mongosh/actions/runs/42"
+      ],
+      "keywords": {},
+      "reason": "Upstream CI test mock of the GitHub API for dispatch-npm-publish.mjs: it replaces fetch and returns the URL as data, sends nothing, and is not part of the mongosh binary; verified at upstream commit fb48923a459d725b266758d8184b9a0c15525a9f."
     }
   }
 }

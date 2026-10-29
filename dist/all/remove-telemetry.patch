@@ -1,5 +1,5 @@
 diff --git a/package-lock.json b/package-lock.json
-index 9974d42..0b11ed7 100644
+index 881e8cb..49c71a8 100644
 --- a/package-lock.json
 +++ b/package-lock.json
 @@ -7104,12 +7104,6 @@
@@ -25,10 +25,10 @@ index 9974d42..0b11ed7 100644
 -      "integrity": "sha512-pAaBe0wPL0v9aS62OC52jwD3iEBGTD+i2Rppsr77mf0BCyb/PMJZW06PxviZDkaqDMEfpOXVfYDdwtj3gnzfPQ==",
 -      "license": "Apache-2.0"
 -    },
-     "node_modules/@mongodb-js/mongodb-constants": {
-       "version": "0.33.0",
-       "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-constants/-/mongodb-constants-0.33.0.tgz",
-@@ -8013,30 +8001,6 @@
+     "node_modules/@mongodb-js/mongodb-build-info": {
+       "version": "1.9.19",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-build-info/-/mongodb-build-info-1.9.19.tgz",
+@@ -8056,30 +8044,6 @@
          "node": ">=8"
        }
      },
@@ -66,9 +66,9 @@ index 9974d42..0b11ed7 100644
 -        "@mongodb-js/device-id": "^0.4.13",
          "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -        "@mongodb-js/get-os-info": "^0.7.0",
+         "@mongodb-js/mongodb-redact": "^1.4.19",
          "@mongosh/arg-parser": "^5.6.1",
          "@mongosh/autocomplete": "^5.9.5",
-         "@mongosh/editor": "^5.9.5",
 @@ -39166,7 +39128,6 @@
          "node": ">=18.19.0"
        },
@@ -78,10 +78,10 @@ index 9974d42..0b11ed7 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index 14f7fba..5b37083 100644
+index 3fcc669..a562fbd 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
-@@ -57,19 +57,11 @@
+@@ -57,20 +57,12 @@
        ],
        "glibc-version": [
          "linux"
@@ -97,6 +97,7 @@ index 14f7fba..5b37083 100644
 -    "@mongodb-js/device-id": "^0.4.13",
      "@mongodb-js/devtools-proxy-support": "^0.7.5",
 -    "@mongodb-js/get-os-info": "^0.7.0",
+     "@mongodb-js/mongodb-redact": "^1.4.19",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
      "@mongosh/arg-parser": "^5.6.1",
      "@mongosh/autocomplete": "^5.9.5",
@@ -110,7 +111,7 @@ index 14f7fba..5b37083 100644
      "glibc-version": "^1.0.1",
      "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/src/cli-repl.ts b/packages/cli-repl/src/cli-repl.ts
-index 7b46b51..2ef669c 100644
+index 92d8a33..f39c9d5 100644
 --- a/packages/cli-repl/src/cli-repl.ts
 +++ b/packages/cli-repl/src/cli-repl.ts
 @@ -30,8 +30,7 @@ import type { MongoshNodeReplOptions, MongoshIOProvider } from './mongosh-repl';
@@ -1478,7 +1479,7 @@ index 3695f5a..4f43349 100644
 -export { getAiAgent, KNOWN_AGENT_ENV_VARS } from './helpers';
 -export type { TelemetryEvent } from './telemetry-events';
 diff --git a/packages/logging/src/logging-and-telemetry.ts b/packages/logging/src/logging-and-telemetry.ts
-index 05d24d8..ea5975a 100644
+index 20b9db3..4f05345 100644
 --- a/packages/logging/src/logging-and-telemetry.ts
 +++ b/packages/logging/src/logging-and-telemetry.ts
 @@ -6,13 +6,11 @@ import {
@@ -2440,7 +2441,7 @@ index badaeb2..3bb1c75 100644
  
    @returnsPromise
 diff --git a/packages/shell-api/src/shell-instance-state.ts b/packages/shell-api/src/shell-instance-state.ts
-index cb26b0f..f330c25 100644
+index 55e31ca..5031d5c 100644
 --- a/packages/shell-api/src/shell-instance-state.ts
 +++ b/packages/shell-api/src/shell-instance-state.ts
 @@ -186,7 +186,6 @@ export class ShellInstanceState {
