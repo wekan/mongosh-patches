@@ -27,8 +27,9 @@ newest node-patches release.
 
 # Upcoming mongosh-patches release
 
-**In short:** the telemetry removal applies to upstream **def034d** (mongosh
-2.14.0) again, including its new terminal-input check for tracked sessions.
+**In short:** the telemetry removal applies to upstream **fb48923** again, where
+the redact and build-info packages were renamed, after **def034d** (mongosh
+2.14.0) with its new terminal-input check for tracked sessions.
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/1a4d691">Refresh telemetry removal for upstream mongosh def034db7e5d</a>. Thanks to xet7.</summary>
@@ -41,6 +42,20 @@ with the tracking logic it served. The other files' sections are unchanged.
 The test overlay is def034d's; the patch tests pass on it and the previous
 patch fails four. `prepare-source.sh` on a fresh def034d applies the patch and
 passes the telemetry and dependency audits.
+
+</details>
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/c1d6c73">Refresh telemetry removal for upstream mongosh fb48923a459d</a>. Thanks to xet7.</summary>
+
+Upstream replaced `mongodb-redact` and `mongodb-build-info` with the scoped
+`@mongodb-js/` packages, which moved the context of the manifest and lockfile
+hunks, so every build stopped at prepare-source again. The same three
+telemetry packages are removed; the renamed ones are ordinary dependencies and
+stay. A new upstream CI test mock holding a github.com URL as data is recorded
+in the source baseline with its reason. The test overlay is fb48923's; the
+patch tests pass on it and the previous patch fails four, and a fresh fb48923
+checkout applies the patch and passes the telemetry and dependency audits.
 
 </details>
 
