@@ -27,9 +27,23 @@ newest node-patches release.
 
 # Upcoming mongosh-patches release
 
-**In short:** the telemetry removal applies to upstream **fb48923** again, where
-the redact and build-info packages were renamed, after **def034d** (mongosh
-2.14.0) with its new terminal-input check for tracked sessions.
+**In short:** the telemetry removal applies to upstream **a49b3fc** again,
+whose generated version bumps moved the manifest and lockfile context, after
+**fb48923**, where the redact and build-info packages were renamed, and
+**def034d** (mongosh 2.14.0).
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/7ae56fd">Refresh telemetry removal for upstream mongosh a49b3fc93e86</a>. Thanks to xet7.</summary>
+
+Upstream's auto-generated version bumps sat next to the lines the patch
+removes, so the manifest and lockfile hunks stopped applying and every build
+stopped at prepare-source again. The removals are unchanged - the same three
+telemetry packages go and nothing is added - and the patch is regenerated from
+a49b3fc. The test overlay is a49b3fc's; the patch tests pass on it and the
+previous patch fails four, and a fresh a49b3fc checkout applies the patch and
+passes the telemetry audit.
+
+</details>
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/1a4d691">Refresh telemetry removal for upstream mongosh def034db7e5d</a>. Thanks to xet7.</summary>
