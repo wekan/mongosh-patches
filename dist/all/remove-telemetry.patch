@@ -1,5 +1,5 @@
 diff --git a/package-lock.json b/package-lock.json
-index d22a476..74efcd3 100644
+index 156a235..84f0b50 100644
 --- a/package-lock.json
 +++ b/package-lock.json
 @@ -7104,12 +7104,6 @@
@@ -13,8 +13,8 @@ index d22a476..74efcd3 100644
 -      "license": "Apache-2.0"
 -    },
      "node_modules/@mongodb-js/devtools-connect": {
-       "version": "3.14.9",
-       "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-3.14.9.tgz",
+       "version": "5.0.13",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-5.0.13.tgz",
 @@ -7387,12 +7381,6 @@
        "resolved": "configs/eslint-config-mongosh",
        "link": true
@@ -57,19 +57,19 @@ index d22a476..74efcd3 100644
 -      }
 -    },
      "node_modules/@mongodb-js/oidc-http-server-pages": {
-       "version": "1.2.6",
-       "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-1.2.6.tgz",
-@@ -39108,9 +39072,7 @@
+       "version": "2.0.5",
+       "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-2.0.5.tgz",
+@@ -39107,9 +39071,7 @@
        "version": "2.14.1",
        "license": "Apache-2.0",
        "dependencies": {
 -        "@mongodb-js/device-id": "^0.4.13",
-         "@mongodb-js/devtools-proxy-support": "^0.7.5",
+         "@mongodb-js/devtools-proxy-support": "^0.7.29",
 -        "@mongodb-js/get-os-info": "^0.7.0",
          "@mongodb-js/mongodb-redact": "^1.4.19",
          "@mongosh/arg-parser": "^5.6.1",
          "@mongosh/autocomplete": "^5.9.7",
-@@ -39166,7 +39128,6 @@
+@@ -39169,7 +39131,6 @@
          "node": ">=18.19.0"
        },
        "optionalDependencies": {
@@ -78,7 +78,7 @@ index d22a476..74efcd3 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index ab40af9..3783864 100644
+index c5afc5d..967dc55 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
 @@ -57,20 +57,12 @@
@@ -95,14 +95,14 @@ index ab40af9..3783864 100644
    },
    "dependencies": {
 -    "@mongodb-js/device-id": "^0.4.13",
-     "@mongodb-js/devtools-proxy-support": "^0.7.5",
+     "@mongodb-js/devtools-proxy-support": "^0.7.29",
 -    "@mongodb-js/get-os-info": "^0.7.0",
      "@mongodb-js/mongodb-redact": "^1.4.19",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
      "@mongosh/arg-parser": "^5.6.1",
      "@mongosh/autocomplete": "^5.9.7",
      "@mongosh/editor": "^5.9.7",
-@@ -120,7 +112,6 @@
+@@ -124,7 +116,6 @@
      "webpack-merge": "^5.8.0"
    },
    "optionalDependencies": {
@@ -111,7 +111,7 @@ index ab40af9..3783864 100644
      "glibc-version": "^1.0.1",
      "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/src/cli-repl.ts b/packages/cli-repl/src/cli-repl.ts
-index 92d8a33..f39c9d5 100644
+index 59cd072..e59e1fa 100644
 --- a/packages/cli-repl/src/cli-repl.ts
 +++ b/packages/cli-repl/src/cli-repl.ts
 @@ -30,8 +30,7 @@ import type { MongoshNodeReplOptions, MongoshIOProvider } from './mongosh-repl';
@@ -279,7 +279,7 @@ index 92d8a33..f39c9d5 100644
  
      this.isContainerizedEnvironment =
        await this.getIsContainerizedEnvironment();
-@@ -422,9 +355,7 @@ export class CliRepl implements MongoshIOProvider {
+@@ -425,9 +358,7 @@ export class CliRepl implements MongoshIOProvider {
      }
      markTime(TimingCategories.REPLInstantiation, 'ensured shell homedir');
  
@@ -290,7 +290,7 @@ index 92d8a33..f39c9d5 100644
      let configSetupError: Error | null = null;
      try {
        this.config = await this.configDirectory.generateOrReadConfig(
-@@ -437,40 +368,12 @@ export class CliRepl implements MongoshIOProvider {
+@@ -440,40 +371,12 @@ export class CliRepl implements MongoshIOProvider {
      this.globalConfig = await this.loadGlobalConfigFile();
      markTime(TimingCategories.UserConfigLoading, 'read global config files');
  
@@ -333,7 +333,7 @@ index 92d8a33..f39c9d5 100644
  
      await this.setLoggingEnabled(!(await this.getConfig('disableLogging')));
  
-@@ -588,11 +491,6 @@ export class CliRepl implements MongoshIOProvider {
+@@ -591,11 +494,6 @@ export class CliRepl implements MongoshIOProvider {
      if (willExecuteCommandLineScripts) {
        this.mongoshRepl.setIsInteractive(willEnterInteractiveMode);
  
@@ -345,7 +345,7 @@ index 92d8a33..f39c9d5 100644
  
        this.bus.emit('mongosh:start-loading-cli-scripts', {
          usesShellOption: !!this.cliOptions.shell,
-@@ -608,9 +506,6 @@ export class CliRepl implements MongoshIOProvider {
+@@ -611,9 +509,6 @@ export class CliRepl implements MongoshIOProvider {
          return;
        }
        if (!this.cliOptions.shell) {
@@ -355,7 +355,7 @@ index 92d8a33..f39c9d5 100644
          await this.exit(0);
          return;
        }
-@@ -641,18 +536,10 @@ export class CliRepl implements MongoshIOProvider {
+@@ -644,18 +539,10 @@ export class CliRepl implements MongoshIOProvider {
  
      this.verifyPlatformSupport();
  
@@ -374,7 +374,7 @@ index 92d8a33..f39c9d5 100644
    }
  
    private static getFileAndEvalInfo(cliOptions: CliOptions): {
-@@ -696,18 +583,8 @@ export class CliRepl implements MongoshIOProvider {
+@@ -699,18 +586,8 @@ export class CliRepl implements MongoshIOProvider {
    }
  
    async setupTelemetrySink(): Promise<void> {
@@ -395,7 +395,7 @@ index 92d8a33..f39c9d5 100644
    }
  
    async setLoggingEnabled(enabled: boolean): Promise<void> {
-@@ -718,65 +595,18 @@ export class CliRepl implements MongoshIOProvider {
+@@ -721,65 +598,18 @@ export class CliRepl implements MongoshIOProvider {
      }
    }
  
@@ -466,7 +466,7 @@ index 92d8a33..f39c9d5 100644
    }
  
    async loadCommandLineFilesAndEval(
-@@ -1025,9 +855,9 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1028,9 +858,9 @@ export class CliRepl implements MongoshIOProvider {
    async getConfig<K extends keyof CliUserConfig>(
      key: K
    ): Promise<CliUserConfig[K]> {
@@ -479,7 +479,7 @@ index 92d8a33..f39c9d5 100644
      return (
        (this.config as CliUserConfig)[key] ??
        (this.globalConfig as CliUserConfig)?.[key] ??
-@@ -1047,15 +877,11 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1050,15 +880,11 @@ export class CliRepl implements MongoshIOProvider {
          "The 'forceDisableTelemetry' setting cannot be modified"
        );
      }
@@ -498,7 +498,7 @@ index 92d8a33..f39c9d5 100644
      if (key === 'disableLogging') {
        await this.setLoggingEnabled(!value);
      }
-@@ -1280,32 +1106,7 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1283,32 +1109,7 @@ export class CliRepl implements MongoshIOProvider {
          }
        }
        markTime(TimingCategories.REPLInstantiation, 'output flushed');
@@ -531,7 +531,7 @@ index 92d8a33..f39c9d5 100644
        await this.logWriter?.flush();
  
        markTime(TimingCategories.Logging, 'flushed log writer');
-@@ -1421,49 +1222,7 @@ export class CliRepl implements MongoshIOProvider {
+@@ -1435,49 +1236,7 @@ export class CliRepl implements MongoshIOProvider {
    }
  
    async fetchMongoshUpdateUrl() {
@@ -691,10 +691,10 @@ index 8771da2..64261b8 100644
 +  return 'unknown';
  }
 diff --git a/packages/cli-repl/src/mongosh-repl.ts b/packages/cli-repl/src/mongosh-repl.ts
-index 95a34f5..b383e05 100644
+index 3314227..52fc41e 100644
 --- a/packages/cli-repl/src/mongosh-repl.ts
 +++ b/packages/cli-repl/src/mongosh-repl.ts
-@@ -628,14 +628,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -642,14 +642,6 @@ class MongoshNodeRepl implements EvaluationListener {
  
      markTime(TimingCategories.UserConfigLoading, 'set up history file');
  
@@ -709,7 +709,7 @@ index 95a34f5..b383e05 100644
      repl.on('exit', () => {
        // repl is already closed, no need to close it again via this.close()
        if (this._runtimeState) this._runtimeState.repl = null;
-@@ -894,7 +886,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -908,7 +900,6 @@ class MongoshNodeRepl implements EvaluationListener {
          );
        };
      });
@@ -717,7 +717,7 @@ index 95a34f5..b383e05 100644
      try {
        process.addListener('SIGINT', asyncSigintHandler);
        return await Promise.race([
-@@ -911,7 +902,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -925,7 +916,6 @@ class MongoshNodeRepl implements EvaluationListener {
        ]);
      } finally {
        process.removeListener('SIGINT', asyncSigintHandler);

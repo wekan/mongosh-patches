@@ -4486,6 +4486,15 @@
       ],
       "keywords": {},
       "reason": "Upstream CI test mock of the GitHub API for dispatch-npm-publish.mjs: it replaces fetch and returns the URL as data, sends nothing, and is not part of the mongosh binary; verified at upstream commit fb48923a459d725b266758d8184b9a0c15525a9f."
+    },
+    "packages/cli-repl/src/is-recoverable-error.ts": {
+      "sha256": "3d10f3244a22284f90fa198c75d932bcafd1499afd36ac345625e0d1a07ae39c",
+      "urls": [
+        "https://github.com/nodejs/node/blob/master/lib/internal/repl/utils.js",
+        "https://www.ecma-international.org/ecma-262/#sec-line-terminators"
+      ],
+      "keywords": {},
+      "reason": "Known non-reporting reference URLs in source comments (the Node.js REPL code it is derived from, and the ECMAScript line terminators); upstream inlined the is-recoverable-error package; verified at upstream commit 88b5999946ff273ee82fb0d2c17225b6480b5029."
     }
   }
 }
