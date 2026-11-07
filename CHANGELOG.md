@@ -25,6 +25,25 @@ newest node-patches release.
 
 </details>
 
+# Upcoming mongosh-patches release
+
+**In short:** the telemetry removal applies to upstream **88b5999** again,
+whose cli-repl dependency updates moved the manifest and lockfile context.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/e08b845d022bb3e228a400942046b866b3d71a90">Refresh telemetry removal for upstream mongosh 88b5999946ff</a>. Thanks to xet7.</summary>
+
+Upstream updated cli-repl's dependencies (devtools-proxy-support, mongodb-log-writer
+3, the acorn packages, is-recoverable-error inlined) next to the lines the patch
+removes, so the manifest and lockfile hunks stopped applying and every build
+stopped at prepare-source. The removals are unchanged - the same three
+telemetry packages, 39 lockfile and 9 manifest lines - and the patch is
+regenerated from 88b5999 with the same 21 files. The inlined
+is-recoverable-error.ts has two URLs in comments only, now in the risk
+baseline with that reason; the telemetry audit and the patch tests pass.
+
+</details>
+
 # main-a49b3fc93e86 2026-11-01 mongosh-patches release
 
 **In short:** the telemetry removal applies to upstream **a49b3fc** again,
