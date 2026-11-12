@@ -25,10 +25,24 @@ newest node-patches release.
 
 </details>
 
-# main-80e71bce9f9c 2026-11-12 mongosh-patches release
+# Upcoming mongosh-patches release
 
-**In short:** the telemetry removal applies to upstream **88b5999** again,
-whose cli-repl dependency updates moved the manifest and lockfile context.
+**In short:** the telemetry removal applies to upstream **88b5999** and
+**80e71bc** again, whose cli-repl dependency updates and version bumps moved
+the manifest and lockfile context.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/3a7b66dad8a1177f05ded61020313f7f120ad61e">Refresh telemetry removal for upstream mongosh 80e71bce9f9c</a>. Thanks to xet7.</summary>
+
+The main-80e71bce9f9c release stopped at prepare-source and published nothing:
+upstream bumped cli-repl's @mongosh/* packages next to the lines the patch
+removes, so the manifest and lockfile hunks stopped applying. The removals are
+unchanged - the same three telemetry packages, 39 lockfile and 9 manifest
+lines - and the patch is regenerated from 80e71bc with the same 21 files. The
+test overlay is 80e71bc's manifest and lockfile; a fresh checkout passes the
+checksum, the patch and the telemetry audit.
+
+</details>
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/e08b845d022bb3e228a400942046b866b3d71a90">Refresh telemetry removal for upstream mongosh 88b5999946ff</a>. Thanks to xet7.</summary>
