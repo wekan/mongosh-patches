@@ -1,8 +1,8 @@
 diff --git a/package-lock.json b/package-lock.json
-index 156a235..84f0b50 100644
+index 63aa275..3a96fe1 100644
 --- a/package-lock.json
 +++ b/package-lock.json
-@@ -7104,12 +7104,6 @@
+@@ -7014,12 +7014,6 @@
          "node": ">=10"
        }
      },
@@ -15,7 +15,7 @@ index 156a235..84f0b50 100644
      "node_modules/@mongodb-js/devtools-connect": {
        "version": "5.0.13",
        "resolved": "https://registry.npmjs.org/@mongodb-js/devtools-connect/-/devtools-connect-5.0.13.tgz",
-@@ -7387,12 +7381,6 @@
+@@ -7297,12 +7291,6 @@
        "resolved": "configs/eslint-config-mongosh",
        "link": true
      },
@@ -28,8 +28,8 @@ index 156a235..84f0b50 100644
      "node_modules/@mongodb-js/mongodb-build-info": {
        "version": "1.9.19",
        "resolved": "https://registry.npmjs.org/@mongodb-js/mongodb-build-info/-/mongodb-build-info-1.9.19.tgz",
-@@ -8056,30 +8044,6 @@
-         "node": ">=8"
+@@ -8089,30 +8077,6 @@
+         "url": "https://github.com/sponsors/sindresorhus"
        }
      },
 -    "node_modules/@mongodb-js/native-machine-id": {
@@ -59,17 +59,17 @@ index 156a235..84f0b50 100644
      "node_modules/@mongodb-js/oidc-http-server-pages": {
        "version": "2.0.5",
        "resolved": "https://registry.npmjs.org/@mongodb-js/oidc-http-server-pages/-/oidc-http-server-pages-2.0.5.tgz",
-@@ -39107,9 +39071,7 @@
-       "version": "2.14.1",
+@@ -39151,9 +39115,7 @@
+       "version": "2.14.2",
        "license": "Apache-2.0",
        "dependencies": {
 -        "@mongodb-js/device-id": "^0.4.13",
          "@mongodb-js/devtools-proxy-support": "^0.7.29",
 -        "@mongodb-js/get-os-info": "^0.7.0",
          "@mongodb-js/mongodb-redact": "^1.4.19",
-         "@mongosh/arg-parser": "^5.6.1",
-         "@mongosh/autocomplete": "^5.9.7",
-@@ -39169,7 +39131,6 @@
+         "@mongosh/arg-parser": "^5.6.3",
+         "@mongosh/autocomplete": "^5.9.9",
+@@ -39213,7 +39175,6 @@
          "node": ">=18.19.0"
        },
        "optionalDependencies": {
@@ -78,7 +78,7 @@ index 156a235..84f0b50 100644
          "glibc-version": "^1.0.1",
          "macos-export-certificate-and-key": "^2.0.1",
 diff --git a/packages/cli-repl/package.json b/packages/cli-repl/package.json
-index c5afc5d..967dc55 100644
+index 907ba24..148e1b4 100644
 --- a/packages/cli-repl/package.json
 +++ b/packages/cli-repl/package.json
 @@ -57,20 +57,12 @@
@@ -99,9 +99,9 @@ index c5afc5d..967dc55 100644
 -    "@mongodb-js/get-os-info": "^0.7.0",
      "@mongodb-js/mongodb-redact": "^1.4.19",
 -    "@mongodb-js/native-machine-id": "^0.3.6",
-     "@mongosh/arg-parser": "^5.6.1",
-     "@mongosh/autocomplete": "^5.9.7",
-     "@mongosh/editor": "^5.9.7",
+     "@mongosh/arg-parser": "^5.6.3",
+     "@mongosh/autocomplete": "^5.9.9",
+     "@mongosh/editor": "^5.9.9",
 @@ -124,7 +116,6 @@
      "webpack-merge": "^5.8.0"
    },
@@ -691,10 +691,10 @@ index 8771da2..64261b8 100644
 +  return 'unknown';
  }
 diff --git a/packages/cli-repl/src/mongosh-repl.ts b/packages/cli-repl/src/mongosh-repl.ts
-index 3314227..52fc41e 100644
+index add40a0..286d585 100644
 --- a/packages/cli-repl/src/mongosh-repl.ts
 +++ b/packages/cli-repl/src/mongosh-repl.ts
-@@ -642,14 +642,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -643,14 +643,6 @@ class MongoshNodeRepl implements EvaluationListener {
  
      markTime(TimingCategories.UserConfigLoading, 'set up history file');
  
@@ -709,7 +709,7 @@ index 3314227..52fc41e 100644
      repl.on('exit', () => {
        // repl is already closed, no need to close it again via this.close()
        if (this._runtimeState) this._runtimeState.repl = null;
-@@ -908,7 +900,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -911,7 +903,6 @@ class MongoshNodeRepl implements EvaluationListener {
          );
        };
      });
@@ -717,7 +717,7 @@ index 3314227..52fc41e 100644
      try {
        process.addListener('SIGINT', asyncSigintHandler);
        return await Promise.race([
-@@ -925,7 +916,6 @@ class MongoshNodeRepl implements EvaluationListener {
+@@ -928,7 +919,6 @@ class MongoshNodeRepl implements EvaluationListener {
        ]);
      } finally {
        process.removeListener('SIGINT', asyncSigintHandler);
