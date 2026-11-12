@@ -25,7 +25,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-80e71bce9f9c 2026-11-12 mongosh-patches release
 
 **In short:** the telemetry removal applies to upstream **88b5999** again,
 whose cli-repl dependency updates moved the manifest and lockfile context.
