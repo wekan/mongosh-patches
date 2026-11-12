@@ -25,7 +25,7 @@ newest node-patches release.
 
 </details>
 
-# Upcoming mongosh-patches release
+# main-cf50e9152f91 2026-11-12 mongosh-patches release
 
 **In short:** the telemetry removal applies to upstream **88b5999** and
 **80e71bc** again, whose cli-repl dependency updates and version bumps moved
