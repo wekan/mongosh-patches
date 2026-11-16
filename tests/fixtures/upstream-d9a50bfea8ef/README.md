@@ -1,8 +1,9 @@
 # Upstream patch fixture overlay
 
 Unchanged files from mongodb-js/mongosh commit
-`80e71bce9f9c60443297a08106f8ce73f47a4ca0`, the source in the failed build
-where upstream's version bumps of the `@mongosh/*` packages in
+`d9a50bfea8ef40ddf1da26d37a9f37303eb63c3e`, the source in the failed build
+where upstream's move to the scoped
+`@mongodb-js/macos-export-certificate-and-key` in
 `packages/cli-repl/package.json` and the lockfile moved the context of the
 manifest and lockfile hunks; the lines the patch removes did not change.
 `cli-repl.ts` is unchanged since `88b5999946ff`, with its SIGINT fix;
