@@ -27,9 +27,25 @@ newest node-patches release.
 
 # Upcoming mongosh-patches release
 
-**In short:** the telemetry removal applies to upstream **d9a50bf** again,
-whose move to the scoped macos-export-certificate-and-key package moved the
-manifest and lockfile context.
+**In short:** the telemetry removal applies to upstream **5f74d57** again,
+after upstream's move to the scoped macos-export-certificate-and-key package
+in **d9a50bf** and its cli-repl 2.14.3 release each moved the manifest and
+lockfile context.
+
+<details>
+<summary><a href="https://github.com/wekan/mongosh-patches/commit/0ed14c183aa572c6d073d6ad6a291f8abadd17b5">Refresh telemetry removal for upstream mongosh 5f74d57f1797</a>. Thanks to xet7.</summary>
+
+The build of upstream 5f74d57 stopped at prepare-source and published nothing:
+upstream released @mongosh/cli-repl 2.14.3 with autocomplete and editor 5.9.12,
+next to the lines the patch removes, so the manifest and lockfile hunks stopped
+applying. The removals are unchanged - the same three telemetry packages, 39
+lockfile and 9 manifest lines - and the patch is regenerated from 5f74d57 with
+the same 21 files. The test overlay is 5f74d57's manifest and lockfile, on
+which the previous patch fails the patch tests; a fresh checkout passes the
+checksum, the patch and the telemetry audit, and the bundle built from it
+reports its version and passes the bundle telemetry audit and runtime test.
+
+</details>
 
 <details>
 <summary><a href="https://github.com/wekan/mongosh-patches/commit/aff9e5cb7a6f722fefa74545faaebbf0b704292a">Refresh telemetry removal for upstream mongosh d9a50bfea8ef</a>. Thanks to xet7.</summary>
