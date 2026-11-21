@@ -1,9 +1,9 @@
 # Upstream patch fixture overlay
 
 Unchanged files from mongodb-js/mongosh commit
-`d9a50bfea8ef40ddf1da26d37a9f37303eb63c3e`, the source in the failed build
-where upstream's move to the scoped
-`@mongodb-js/macos-export-certificate-and-key` in
+`5f74d57f179767b194d97f5cba872e70db703c54`, the source in the failed build
+where upstream's release of `@mongosh/cli-repl` 2.14.3, with
+`@mongosh/autocomplete` and `@mongosh/editor` 5.9.12, in
 `packages/cli-repl/package.json` and the lockfile moved the context of the
 manifest and lockfile hunks; the lines the patch removes did not change.
 `cli-repl.ts` is unchanged since `88b5999946ff`, with its SIGINT fix;

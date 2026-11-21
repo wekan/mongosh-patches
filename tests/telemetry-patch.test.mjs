@@ -21,7 +21,7 @@ async function withSource(run) {
     cpSync(join(root, 'tests/fixtures/upstream-87266a2d7ed9/packages'), join(cwd, 'packages'), { recursive: true });
     // Newest upstream manifest, lockfile and cli-repl.ts (80e71bc: the
     // @mongosh/* version bumps; cli-repl.ts with 88b5999's SIGINT fix).
-    cpSync(join(root, 'tests/fixtures/upstream-d9a50bfea8ef'), cwd, { recursive: true });
+    cpSync(join(root, 'tests/fixtures/upstream-5f74d57f1797'), cwd, { recursive: true });
     writeFileSync(join(cwd, 'package-lock.json'), gunzipSync(readFileSync(join(cwd, 'package-lock.json.gz'))));
     // Isolate git apply from any enclosing repository's prefix or ignore rules.
     assert.equal(spawnSync('git', ['init', '-q', cwd]).status, 0);
